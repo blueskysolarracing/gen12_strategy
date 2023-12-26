@@ -1,0 +1,1 @@
+# gen12_strat
