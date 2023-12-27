@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mosquitto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mosquitto
+  template:
+    metadata:
+      labels:
+        app: mosquitto
+    spec:
+      containers:
+      - name: mosquitto
+        image: eclipse-mosquitto:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 1883
+        - containerPort: 9091
+        volumeMounts:
+        - name: mosquitto-config-volume
+          mountPath: /mosquitto/config/mosquitto.conf
+          subPath: mosquitto.conf
+          readOnly: true
+
+      volumes:
+      - name: mosquitto-config-volume
+        configMap:
+          name: mosquitto-config
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mosquitto-service
+spec:
+  type: NodePort
+  ports:
+  - port: 1883
+    targetPort: 1883
+    nodePort: 32200
+    name: one
+  - port: 9091
+    targetPort: 9091
+    nodePort: 32300
+    name: two
+  selector:
+    app: mosquitto
+
+
+

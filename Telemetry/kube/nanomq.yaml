@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nanomq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nanomq
+  template:
+    metadata:
+      labels:
+        app: nanomq
+    spec:
+      containers:
+      - name: nanomq
+        image: emqx/nanomq:0.19-full
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 1883
+        - containerPort: 8083
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nanomq-service
+spec:
+  type: NodePort
+  ports:
+  - port: 1883
+    targetPort: 1883
+    nodePort: 32200
+  selector:
+    app: nanomq
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nanomqws-service
+spec:
+  type: NodePort
+  ports:
+  - port: 8083
+    targetPort: 8083
+    nodePort: 32300
+  selector:
+    app: nanomq
+

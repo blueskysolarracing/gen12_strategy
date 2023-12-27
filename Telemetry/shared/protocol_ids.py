@@ -1,0 +1,69 @@
+from enum import IntEnum
+
+# ===== Sender IDs =====
+class Sender_ID(IntEnum):
+    SENDER_ID_NOT_USED = 0
+    BBMB_ID = 1
+    PPTMB_ID = 2
+    MCMB_ID = 3
+    DCMB_ID = 4
+    CHASE_ID = 5
+    BMS_ID = 6
+
+# ===== Data IDs =====
+class BBMB_Data_ID(IntEnum):
+    BBMB_BUS_METRICS_ID = 0 # use
+    BBMB_FAULT_STATE_ID = 1 # use
+    BBMB_BSD_ID = 2 
+    BBMB_BMS_MCU_STATUS_ID = 3
+    BBMB_UNUSED_ID_0x4 = 4
+    BBMB_BMS_DATA_REQUEST_ID = 5
+    BBMB_RELAYS_STATE_ID = 6 # use, but only get the relay states. Don't take the fault status
+    BBMB_LP_BUS_METRICS_ID = 0x0D
+    BBMB_CORE_TEMP_ID = 0x0E
+    BBMB_HEARTBEAT_ID = 0x0F # use
+
+class PPTMB_DATA_ID(IntEnum):
+    PPTMB_BUS_METRICS_ID = 0
+    PPTMB_PPT_METRICS_ID = 1
+
+    PPTMB_RELAYS_STATE_ID = 0x06
+    PPTMB_LP_BUS_METRICS_ID = 0x0D
+    PPTMB_CORE_TEMP_ID = 0x0E
+    PPTMB_HEARTBEAT_ID = 0x0F # use
+
+class MCMB_Data_ID(IntEnum):
+    MCMB_BUS_METRICS_ID = 0
+    MCMB_CAR_SPEED_ID = 1
+    MCMB_MOTOR_TEMPERATURE_ID = 2
+    MCMB_SUPP_BATT_VOLTAGE_ID = 3
+    MCMB_LP_BUS_METRICS_ID = 0x0D
+    MCMB_CORE_TEMP_ID = 0x0E
+    MCMB_HEARTBEAT_ID = 0x0F
+
+class DCMB_Data_ID(IntEnum):
+    DCMB_MC2_STATE_ID = 0  # To be deprecated
+    DCMB_BBOX_STARTUP_ID = 1
+    DCMB_PPTBOX_STARTUP_ID = 2
+    DCMB_LIGHTCONTROL_ID = 3
+    DCMB_STEERING_WHEEL_ID = 4
+    DCMB_MOTOR_CONTROL_STATE_ID = 5
+    DCMB_RELAYS_STATE_ID = 6
+    DCMB_PEDALS_ANGLE_ID = 7
+    DCMB_SIDE_PANEL_ID = 8
+    DCMB_LP_BUS_METRICS_ID = 0x0D
+    DCMB_CORE_TEMP_ID = 0x0E
+    DCMB_HEARTBEAT_ID = 0x0F
+
+class Chase_Data_ID(IntEnum):
+    CHASE_HEARTBEAT_REQ_ID = 0
+    CHASE_SOFT_RESET_REQ_ID = 1
+    CHASE_SET_FREQUENCY_ID = 2
+    CHASE_LIGHTCONTROL_ID = 3
+    CHASE_SET_RTC_ID = 4
+    CHASE_CRUISE_PI_GAIN_ID = 5
+    CHASE_MESSAGE_ID = 6
+    CHASE_VMF_ID = 7
+    CHASE_ECO_MODE_ID = 8
+    CHASE_FAULT_ENABLE_ID = 9
+    CHASE_HEARTBEAT_ID = 0x0F

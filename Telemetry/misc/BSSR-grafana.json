@@ -1,0 +1,2084 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 370
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "Motor Power - Array Power"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 25,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+          },
+          "query": "from(bucket: \"bssr\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"MCMB\" or r[\"_field\"] == \"PPTMB\")\n  |> filter(fn: (r) => r[\"host\"] == \"telem\")\n  |> filter(fn: (r) => r[\"topic\"] == \"bus_metrics/voltage/PPTMB\" or r[\"topic\"] == \"bus_metrics/voltage/MCMB\" or r[\"topic\"] == \"bus_metrics/current/PPTMB\" or r[\"topic\"] == \"bus_metrics/current/MCMB\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Panel Title",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Motor Power",
+            "binary": {
+              "left": "MCMB {host=\"telem\", name=\"mqtt_consumer\", topic=\"bus_metrics/current/MCMB\"}",
+              "operator": "*",
+              "reducer": "sum",
+              "right": "MCMB {host=\"telem\", name=\"mqtt_consumer\", topic=\"bus_metrics/voltage/MCMB\"}"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Array Power",
+            "binary": {
+              "left": "PPTMB {host=\"telem\", name=\"mqtt_consumer\", topic=\"bus_metrics/current/PPTMB\"}",
+              "operator": "*",
+              "reducer": "sum",
+              "right": "PPTMB {host=\"telem\", name=\"mqtt_consumer\", topic=\"bus_metrics/voltage/PPTMB\"}"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "binary": {
+              "left": "Motor Power",
+              "operator": "-",
+              "reducer": "sum",
+              "right": "Array Power"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "amp"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "hide": false,
+          "refId": "A",
+          "topic": "bus_metrics/current/BBMB"
+        },
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "hide": false,
+          "refId": "B",
+          "topic": "bus_metrics/current/MCMB"
+        },
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "hide": false,
+          "refId": "C",
+          "topic": "bus_metrics/current/PPTMB"
+        }
+      ],
+      "title": "Bus Current",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "binary": {
+              "left": "PPTMB",
+              "reducer": "sum"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 23,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+          },
+          "query": "from(bucket: \"bssr\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"target_power\")\n  |> filter(fn: (r) => r[\"host\"] == \"telem\")\n  |> filter(fn: (r) => r[\"topic\"] == \"dcmb/target_power\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Target Power",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 2,
+        "x": 12,
+        "y": 8
+      },
+      "id": 16,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "refId": "A",
+          "topic": "bus_metrics/voltage/MCMB"
+        },
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "hide": false,
+          "refId": "B",
+          "topic": "bus_metrics/current/MCMB"
+        }
+      ],
+      "title": "Motor Power",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "binary": {
+              "left": "MCMB 1",
+              "operator": "*",
+              "reducer": "sum",
+              "right": "MCMB 2"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "index": 0,
+                  "text": "Off"
+                },
+                "1": {
+                  "index": 1,
+                  "text": "Pedal"
+                },
+                "2": {
+                  "index": 2,
+                  "text": "Cruise"
+                },
+                "3": {
+                  "index": 3,
+                  "text": "Regen"
+                },
+                "4": {
+                  "index": 4,
+                  "text": "Stand By"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 14,
+        "y": 8
+      },
+      "id": 13,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "refId": "A",
+          "topic": "dcmb/motor_state"
+        }
+      ],
+      "title": "Motor State",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 2,
+        "x": 17,
+        "y": 8
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "refId": "A",
+          "topic": "dcmb/target_power"
+        }
+      ],
+      "title": "Target power",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 2,
+        "x": 19,
+        "y": 8
+      },
+      "id": 11,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "refId": "A",
+          "topic": "dcmb/vfm_position"
+        }
+      ],
+      "title": "VFM Position",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 21,
+        "y": 8
+      },
+      "id": 1,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "refId": "A",
+          "topic": "mcmb/car_speed"
+        }
+      ],
+      "title": "Car Speed",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 300
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 12,
+        "y": 13
+      },
+      "id": 20,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+          },
+          "query": "from(bucket: \"bssr\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"BBMB\" or r[\"_field\"] == \"MCMB\")\n  |> filter(fn: (r) => r[\"host\"] == \"telem\")\n  |> filter(fn: (r) => r[\"topic\"] == \"bus_metrics/voltage/MCMB\" or r[\"topic\"] == \"bus_metrics/voltage/BBMB\" or r[\"topic\"] == \"bus_metrics/current/MCMB\" or r[\"topic\"] == \"bus_metrics/current/BBMB\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Array Power",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "BBMB Power",
+            "binary": {
+              "left": "BBMB {host=\"telem\", name=\"mqtt_consumer\", topic=\"bus_metrics/current/BBMB\"}",
+              "operator": "*",
+              "reducer": "sum",
+              "right": "BBMB {host=\"telem\", name=\"mqtt_consumer\", topic=\"bus_metrics/voltage/BBMB\"}"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "MCMB Power",
+            "binary": {
+              "left": "MCMB {host=\"telem\", name=\"mqtt_consumer\", topic=\"bus_metrics/current/MCMB\"}",
+              "operator": "*",
+              "reducer": "sum",
+              "right": "MCMB {host=\"telem\", name=\"mqtt_consumer\", topic=\"bus_metrics/voltage/MCMB\"}"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Array power",
+            "binary": {
+              "left": "MCMB Power",
+              "operator": "-",
+              "reducer": "sum",
+              "right": "BBMB Power"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 200
+              }
+            ]
+          },
+          "unit": "volt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 9,
+        "x": 15,
+        "y": 13
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "hide": false,
+          "refId": "A",
+          "topic": "bus_metrics/voltage/BBMB"
+        },
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "hide": false,
+          "refId": "B",
+          "topic": "bus_metrics/voltage/MCMB"
+        },
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "hide": false,
+          "refId": "C",
+          "topic": "bus_metrics/voltage/PPTMB"
+        }
+      ],
+      "title": "Bus Voltage Live",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+          },
+          "query": "from(bucket: \"bssr\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"module_5_cell_4\" or r[\"_field\"] == \"module_5_cell_3\" or r[\"_field\"] == \"module_5_cell_2\" or r[\"_field\"] == \"module_5_cell_1\" or r[\"_field\"] == \"module_5_cell_0\" or r[\"_field\"] == \"module_4_cell_4\" or r[\"_field\"] == \"module_4_cell_3\" or r[\"_field\"] == \"module_4_cell_2\" or r[\"_field\"] == \"module_4_cell_1\" or r[\"_field\"] == \"module_4_cell_0\" or r[\"_field\"] == \"module_3_cell_4\" or r[\"_field\"] == \"module_3_cell_3\" or r[\"_field\"] == \"module_3_cell_2\" or r[\"_field\"] == \"module_3_cell_1\" or r[\"_field\"] == \"module_3_cell_0\" or r[\"_field\"] == \"module_2_cell_4\" or r[\"_field\"] == \"module_2_cell_3\" or r[\"_field\"] == \"module_2_cell_2\" or r[\"_field\"] == \"module_2_cell_1\" or r[\"_field\"] == \"module_2_cell_0\" or r[\"_field\"] == \"module_1_cell_4\" or r[\"_field\"] == \"module_1_cell_3\" or r[\"_field\"] == \"module_1_cell_2\" or r[\"_field\"] == \"module_1_cell_1\" or r[\"_field\"] == \"module_1_cell_0\")\n  |> filter(fn: (r) => r[\"topic\"] == \"cell_metrics/voltage/module/1/cell/0\" or r[\"topic\"] == \"cell_metrics/voltage/module/1/cell/1\" or r[\"topic\"] == \"cell_metrics/voltage/module/1/cell/2\" or r[\"topic\"] == \"cell_metrics/voltage/module/1/cell/3\" or r[\"topic\"] == \"cell_metrics/voltage/module/1/cell/4\" or r[\"topic\"] == \"cell_metrics/voltage/module/2/cell/0\" or r[\"topic\"] == \"cell_metrics/voltage/module/2/cell/1\" or r[\"topic\"] == \"cell_metrics/voltage/module/2/cell/2\" or r[\"topic\"] == \"cell_metrics/voltage/module/2/cell/3\" or r[\"topic\"] == \"cell_metrics/voltage/module/2/cell/4\" or r[\"topic\"] == \"cell_metrics/voltage/module/3/cell/0\" or r[\"topic\"] == \"cell_metrics/voltage/module/3/cell/1\" or r[\"topic\"] == \"cell_metrics/voltage/module/3/cell/2\" or r[\"topic\"] == \"cell_metrics/voltage/module/3/cell/3\" or r[\"topic\"] == \"cell_metrics/voltage/module/3/cell/4\" or r[\"topic\"] == \"cell_metrics/voltage/module/4/cell/0\" or r[\"topic\"] == \"cell_metrics/voltage/module/4/cell/1\" or r[\"topic\"] == \"cell_metrics/voltage/module/4/cell/2\" or r[\"topic\"] == \"cell_metrics/voltage/module/4/cell/3\" or r[\"topic\"] == \"cell_metrics/voltage/module/4/cell/4\" or r[\"topic\"] == \"cell_metrics/voltage/module/5/cell/0\" or r[\"topic\"] == \"cell_metrics/voltage/module/5/cell/1\" or r[\"topic\"] == \"cell_metrics/voltage/module/5/cell/2\" or r[\"topic\"] == \"cell_metrics/voltage/module/5/cell/3\" or r[\"topic\"] == \"cell_metrics/voltage/module/5/cell/4\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Cell Voltages",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 300
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 3,
+        "x": 12,
+        "y": 18
+      },
+      "id": 15,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "refId": "A",
+          "topic": "bus_metrics/current/PPTMB"
+        },
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "hide": false,
+          "refId": "B",
+          "topic": "bus_metrics/voltage/PPTMB"
+        }
+      ],
+      "title": "Array Power",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "binary": {
+              "left": "PPTMB 1",
+              "operator": "*",
+              "reducer": "sum",
+              "right": "PPTMB 2"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 3,
+        "x": 15,
+        "y": 18
+      },
+      "id": 19,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+          },
+          "query": "from(bucket: \"bssr\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"module_0_cell_0\" or r[\"_field\"] == \"module_5_cell_2\" or r[\"_field\"] == \"module_5_cell_1\" or r[\"_field\"] == \"module_5_cell_0\" or r[\"_field\"] == \"module_4_cell_1\" or r[\"_field\"] == \"module_4_cell_2\" or r[\"_field\"] == \"module_4_cell_0\" or r[\"_field\"] == \"module_3_cell_0\" or r[\"_field\"] == \"module_2_cell_2\" or r[\"_field\"] == \"module_2_cell_1\" or r[\"_field\"] == \"module_2_cell_0\" or r[\"_field\"] == \"module_1_cell_2\" or r[\"_field\"] == \"module_1_cell_1\" or r[\"_field\"] == \"module_0_cell_2\" or r[\"_field\"] == \"module_1_cell_0\" or r[\"_field\"] == \"module_0_cell_1\")\n  |> filter(fn: (r) => r[\"topic\"] == \"cell_metrics/temperature/module/0/cell/0\" or r[\"topic\"] == \"cell_metrics/temperature/module/0/cell/1\" or r[\"topic\"] == \"cell_metrics/temperature/module/0/cell/2\" or r[\"topic\"] == \"cell_metrics/temperature/module/1/cell/0\" or r[\"topic\"] == \"cell_metrics/temperature/module/1/cell/1\" or r[\"topic\"] == \"cell_metrics/temperature/module/2/cell/0\" or r[\"topic\"] == \"cell_metrics/temperature/module/1/cell/2\" or r[\"topic\"] == \"cell_metrics/temperature/module/2/cell/1\" or r[\"topic\"] == \"cell_metrics/temperature/module/3/cell/0\" or r[\"topic\"] == \"cell_metrics/temperature/module/2/cell/2\" or r[\"topic\"] == \"cell_metrics/temperature/module/4/cell/0\" or r[\"topic\"] == \"cell_metrics/temperature/module/4/cell/1\" or r[\"topic\"] == \"cell_metrics/temperature/module/4/cell/2\" or r[\"topic\"] == \"cell_metrics/temperature/module/5/cell/0\" or r[\"topic\"] == \"cell_metrics/temperature/module/5/cell/1\" or r[\"topic\"] == \"cell_metrics/temperature/module/5/cell/2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Max Cell Temp",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [
+                "module_5_cell_2 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/5/cell/2\"}",
+                "module_5_cell_1 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/5/cell/1\"}",
+                "module_5_cell_0 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/5/cell/0\"}",
+                "module_4_cell_2 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/4/cell/2\"}",
+                "module_4_cell_1 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/4/cell/1\"}",
+                "module_4_cell_0 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/4/cell/0\"}",
+                "module_3_cell_0 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/3/cell/0\"}",
+                "module_2_cell_2 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/2/cell/2\"}",
+                "module_2_cell_1 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/2/cell/1\"}",
+                "module_2_cell_0 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/2/cell/0\"}",
+                "module_1_cell_2 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/1/cell/2\"}",
+                "module_1_cell_1 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/1/cell/1\"}",
+                "module_1_cell_0 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/1/cell/0\"}",
+                "module_0_cell_2 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/0/cell/2\"}",
+                "module_0_cell_1 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/0/cell/1\"}",
+                "module_0_cell_0 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/temperature/module/0/cell/0\"}"
+              ],
+              "reducer": "max"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "velocitykmh"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 3,
+        "x": 18,
+        "y": 18
+      },
+      "id": 17,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+          },
+          "query": "from(bucket: \"bssr\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"speed\")\n  |> filter(fn: (r) => r[\"host\"] == \"telem\")\n  |> filter(fn: (r) => r[\"topic\"] == \"wind_sensor/speed\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Wind Speed",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "binary": {
+              "left": "speed {host=\"telem\", topic=\"wind_sensor/speed\"}",
+              "operator": "*",
+              "reducer": "sum",
+              "right": "3.6"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 3,
+        "x": 21,
+        "y": 18
+      },
+      "id": 18,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+          },
+          "query": "from(bucket: \"bssr\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"module_5_cell_4\" or r[\"_field\"] == \"module_5_cell_3\" or r[\"_field\"] == \"module_5_cell_2\" or r[\"_field\"] == \"module_5_cell_1\" or r[\"_field\"] == \"module_5_cell_0\" or r[\"_field\"] == \"module_4_cell_4\" or r[\"_field\"] == \"module_4_cell_3\" or r[\"_field\"] == \"module_4_cell_2\" or r[\"_field\"] == \"module_4_cell_1\" or r[\"_field\"] == \"module_4_cell_0\" or r[\"_field\"] == \"module_3_cell_4\" or r[\"_field\"] == \"module_3_cell_3\" or r[\"_field\"] == \"module_3_cell_2\" or r[\"_field\"] == \"module_3_cell_1\" or r[\"_field\"] == \"module_3_cell_0\" or r[\"_field\"] == \"module_2_cell_4\" or r[\"_field\"] == \"module_2_cell_3\" or r[\"_field\"] == \"module_2_cell_2\" or r[\"_field\"] == \"module_2_cell_1\" or r[\"_field\"] == \"module_2_cell_0\" or r[\"_field\"] == \"module_1_cell_4\" or r[\"_field\"] == \"module_1_cell_3\" or r[\"_field\"] == \"module_1_cell_2\" or r[\"_field\"] == \"module_1_cell_1\" or r[\"_field\"] == \"module_1_cell_0\")\n  |> filter(fn: (r) => r[\"topic\"] == \"cell_metrics/soc/module/5/cell/4\" or r[\"topic\"] == \"cell_metrics/soc/module/5/cell/3\" or r[\"topic\"] == \"cell_metrics/soc/module/5/cell/2\" or r[\"topic\"] == \"cell_metrics/soc/module/5/cell/1\" or r[\"topic\"] == \"cell_metrics/soc/module/5/cell/0\" or r[\"topic\"] == \"cell_metrics/soc/module/4/cell/4\" or r[\"topic\"] == \"cell_metrics/soc/module/4/cell/3\" or r[\"topic\"] == \"cell_metrics/soc/module/4/cell/2\" or r[\"topic\"] == \"cell_metrics/soc/module/4/cell/1\" or r[\"topic\"] == \"cell_metrics/soc/module/4/cell/0\" or r[\"topic\"] == \"cell_metrics/soc/module/3/cell/4\" or r[\"topic\"] == \"cell_metrics/soc/module/3/cell/3\" or r[\"topic\"] == \"cell_metrics/soc/module/3/cell/2\" or r[\"topic\"] == \"cell_metrics/soc/module/3/cell/1\" or r[\"topic\"] == \"cell_metrics/soc/module/3/cell/0\" or r[\"topic\"] == \"cell_metrics/soc/module/2/cell/4\" or r[\"topic\"] == \"cell_metrics/soc/module/2/cell/3\" or r[\"topic\"] == \"cell_metrics/soc/module/2/cell/2\" or r[\"topic\"] == \"cell_metrics/soc/module/2/cell/1\" or r[\"topic\"] == \"cell_metrics/soc/module/2/cell/0\" or r[\"topic\"] == \"cell_metrics/soc/module/1/cell/4\" or r[\"topic\"] == \"cell_metrics/soc/module/1/cell/3\" or r[\"topic\"] == \"cell_metrics/soc/module/1/cell/2\" or r[\"topic\"] == \"cell_metrics/soc/module/1/cell/1\" or r[\"topic\"] == \"cell_metrics/soc/module/1/cell/0\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Cell SOC",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Cell SOC",
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [
+                "module_5_cell_4 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/5/cell/4\"}",
+                "module_5_cell_3 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/5/cell/3\"}",
+                "module_5_cell_2 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/5/cell/2\"}",
+                "module_5_cell_1 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/5/cell/1\"}",
+                "module_5_cell_0 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/5/cell/0\"}",
+                "module_4_cell_4 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/4/cell/4\"}",
+                "module_4_cell_3 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/4/cell/3\"}",
+                "module_4_cell_2 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/4/cell/2\"}",
+                "module_4_cell_1 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/4/cell/1\"}",
+                "module_4_cell_0 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/4/cell/0\"}",
+                "module_3_cell_4 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/3/cell/4\"}",
+                "module_3_cell_3 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/3/cell/3\"}",
+                "module_3_cell_2 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/3/cell/2\"}",
+                "module_3_cell_1 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/3/cell/1\"}",
+                "module_3_cell_0 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/3/cell/0\"}",
+                "module_2_cell_4 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/2/cell/4\"}",
+                "module_2_cell_3 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/2/cell/3\"}",
+                "module_2_cell_2 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/2/cell/2\"}",
+                "module_2_cell_1 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/2/cell/1\"}",
+                "module_2_cell_0 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/2/cell/0\"}",
+                "module_1_cell_4 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/1/cell/4\"}",
+                "module_1_cell_3 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/1/cell/3\"}",
+                "module_1_cell_2 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/1/cell/2\"}",
+                "module_1_cell_1 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/1/cell/1\"}",
+                "module_1_cell_0 {host=\"telem\", name=\"mqtt_consumer\", topic=\"cell_metrics/soc/module/1/cell/0\"}"
+              ],
+              "reducer": "mean"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+          },
+          "query": "from(bucket: \"bssr\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"BBMB\" or r[\"_field\"] == \"MCMB\")\n  |> filter(fn: (r) => r[\"topic\"] == \"bus_metrics/current/MCMB\" or r[\"topic\"] == \"bus_metrics/current/BBMB\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Bus Current Persistent",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 12,
+        "y": 24
+      },
+      "id": 21,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "refId": "A",
+          "topic": "mcmb/motor_temp"
+        }
+      ],
+      "title": "Motor Temp",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 400
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 18,
+        "y": 24
+      },
+      "id": 22,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "refId": "A",
+          "topic": "wind_sensor/direction"
+        }
+      ],
+      "title": "Wind Direction",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "velocitykmh"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 3,
+        "x": 21,
+        "y": 24
+      },
+      "id": 24,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "refId": "A",
+          "topic": "wind_sensor/speed"
+        }
+      ],
+      "title": "Wind Speed",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "binary": {
+              "left": "speed",
+              "operator": "*",
+              "reducer": "sum",
+              "right": "3.6"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 30
+      },
+      "id": 2,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "10.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "refId": "MCMB",
+          "topic": "heartbeats/BBMB"
+        },
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "hide": false,
+          "refId": "BBMB",
+          "topic": "heartbeats/MCMB"
+        },
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "hide": false,
+          "refId": "A",
+          "topic": "heartbeats/PPTMB"
+        },
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "hide": false,
+          "refId": "B",
+          "topic": "heartbeats/DCMB"
+        },
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "a9185296-37c9-41c5-8ba0-171caf8a2478"
+          },
+          "hide": false,
+          "refId": "C",
+          "topic": "heartbeats/BMS"
+        }
+      ],
+      "title": "Heartbeats",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+          },
+          "query": "from(bucket: \"bssr\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"module_0_cell_0\" or r[\"_field\"] == \"module_5_cell_2\" or r[\"_field\"] == \"module_5_cell_1\" or r[\"_field\"] == \"module_5_cell_0\" or r[\"_field\"] == \"module_4_cell_1\" or r[\"_field\"] == \"module_4_cell_2\" or r[\"_field\"] == \"module_4_cell_0\" or r[\"_field\"] == \"module_3_cell_0\" or r[\"_field\"] == \"module_2_cell_2\" or r[\"_field\"] == \"module_2_cell_1\" or r[\"_field\"] == \"module_2_cell_0\" or r[\"_field\"] == \"module_1_cell_2\" or r[\"_field\"] == \"module_1_cell_1\" or r[\"_field\"] == \"module_0_cell_2\" or r[\"_field\"] == \"module_1_cell_0\" or r[\"_field\"] == \"module_0_cell_1\")\n  |> filter(fn: (r) => r[\"topic\"] == \"cell_metrics/temperature/module/0/cell/0\" or r[\"topic\"] == \"cell_metrics/temperature/module/0/cell/1\" or r[\"topic\"] == \"cell_metrics/temperature/module/0/cell/2\" or r[\"topic\"] == \"cell_metrics/temperature/module/1/cell/0\" or r[\"topic\"] == \"cell_metrics/temperature/module/1/cell/1\" or r[\"topic\"] == \"cell_metrics/temperature/module/2/cell/0\" or r[\"topic\"] == \"cell_metrics/temperature/module/1/cell/2\" or r[\"topic\"] == \"cell_metrics/temperature/module/2/cell/1\" or r[\"topic\"] == \"cell_metrics/temperature/module/3/cell/0\" or r[\"topic\"] == \"cell_metrics/temperature/module/2/cell/2\" or r[\"topic\"] == \"cell_metrics/temperature/module/4/cell/0\" or r[\"topic\"] == \"cell_metrics/temperature/module/4/cell/1\" or r[\"topic\"] == \"cell_metrics/temperature/module/4/cell/2\" or r[\"topic\"] == \"cell_metrics/temperature/module/5/cell/0\" or r[\"topic\"] == \"cell_metrics/temperature/module/5/cell/1\" or r[\"topic\"] == \"cell_metrics/temperature/module/5/cell/2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Cell Temps Persistent",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 40
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+          },
+          "query": "from(bucket: \"bssr\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"BBMB\" or r[\"_field\"] == \"MCMB\")\n  |> filter(fn: (r) => r[\"topic\"] == \"bus_metrics/voltage/BBMB\" or r[\"topic\"] == \"bus_metrics/voltage/MCMB\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Bus Voltage Persistent",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 46
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "ad8d492d-f56e-401a-9522-161dd552ec16"
+          },
+          "query": "from(bucket: \"bssr\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mqtt_consumer\")\n  |> filter(fn: (r) => r[\"_field\"] == \"module_5_cell_4\" or r[\"_field\"] == \"module_5_cell_3\" or r[\"_field\"] == \"module_5_cell_2\" or r[\"_field\"] == \"module_5_cell_1\" or r[\"_field\"] == \"module_5_cell_0\" or r[\"_field\"] == \"module_4_cell_4\" or r[\"_field\"] == \"module_4_cell_3\" or r[\"_field\"] == \"module_4_cell_2\" or r[\"_field\"] == \"module_4_cell_1\" or r[\"_field\"] == \"module_4_cell_0\" or r[\"_field\"] == \"module_3_cell_4\" or r[\"_field\"] == \"module_3_cell_3\" or r[\"_field\"] == \"module_3_cell_2\" or r[\"_field\"] == \"module_3_cell_1\" or r[\"_field\"] == \"module_3_cell_0\" or r[\"_field\"] == \"module_2_cell_4\" or r[\"_field\"] == \"module_2_cell_3\" or r[\"_field\"] == \"module_2_cell_2\" or r[\"_field\"] == \"module_2_cell_1\" or r[\"_field\"] == \"module_2_cell_0\" or r[\"_field\"] == \"module_1_cell_4\" or r[\"_field\"] == \"module_1_cell_3\" or r[\"_field\"] == \"module_1_cell_2\" or r[\"_field\"] == \"module_1_cell_1\" or r[\"_field\"] == \"module_1_cell_0\")\n  |> filter(fn: (r) => r[\"topic\"] == \"cell_metrics/soc/module/5/cell/4\" or r[\"topic\"] == \"cell_metrics/soc/module/5/cell/3\" or r[\"topic\"] == \"cell_metrics/soc/module/5/cell/2\" or r[\"topic\"] == \"cell_metrics/soc/module/5/cell/1\" or r[\"topic\"] == \"cell_metrics/soc/module/5/cell/0\" or r[\"topic\"] == \"cell_metrics/soc/module/4/cell/4\" or r[\"topic\"] == \"cell_metrics/soc/module/4/cell/3\" or r[\"topic\"] == \"cell_metrics/soc/module/4/cell/2\" or r[\"topic\"] == \"cell_metrics/soc/module/4/cell/1\" or r[\"topic\"] == \"cell_metrics/soc/module/4/cell/0\" or r[\"topic\"] == \"cell_metrics/soc/module/3/cell/4\" or r[\"topic\"] == \"cell_metrics/soc/module/3/cell/3\" or r[\"topic\"] == \"cell_metrics/soc/module/3/cell/2\" or r[\"topic\"] == \"cell_metrics/soc/module/3/cell/1\" or r[\"topic\"] == \"cell_metrics/soc/module/3/cell/0\" or r[\"topic\"] == \"cell_metrics/soc/module/2/cell/4\" or r[\"topic\"] == \"cell_metrics/soc/module/2/cell/3\" or r[\"topic\"] == \"cell_metrics/soc/module/2/cell/2\" or r[\"topic\"] == \"cell_metrics/soc/module/2/cell/1\" or r[\"topic\"] == \"cell_metrics/soc/module/2/cell/0\" or r[\"topic\"] == \"cell_metrics/soc/module/1/cell/4\" or r[\"topic\"] == \"cell_metrics/soc/module/1/cell/3\" or r[\"topic\"] == \"cell_metrics/soc/module/1/cell/2\" or r[\"topic\"] == \"cell_metrics/soc/module/1/cell/1\" or r[\"topic\"] == \"cell_metrics/soc/module/1/cell/0\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Cell SOC",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "2023-10-24T12:10:08.324Z",
+    "to": "2023-10-27T05:47:39.662Z"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "1s",
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "BSSR",
+  "uid": "eba7f7ea-4ffa-4786-ac44-29c47eda51de",
+  "version": 24,
+  "weekStart": ""
+}

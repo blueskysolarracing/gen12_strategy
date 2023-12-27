@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegraf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegraf
+  template:
+    metadata:
+      labels:
+        app: telegraf
+    spec:
+      containers:
+      - name: telegraf
+        image: telegraf:latest
+        imagePullPolicy: IfNotPresent
+        command: ["telegraf"]
+        args: ["--config", "http://192.168.5.2:32400/api/v2/telegrafs/0be8b8ab9eca5000"]
+        env:
+        - name: INFLUX_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: influxdb-credentials
+              key: INFLUX_TOKEN
+      volumes:
+      - name: telegraf-config-volume
+        configMap:
+          name: telegraf-config
+
