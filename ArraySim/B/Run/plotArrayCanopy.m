@@ -1,4 +1,4 @@
-function plotArrayCanopy(canopy,arrayCells, numberOfCells)
+function plotArrayCanopy(canopy,arrayCells, numberOfCells, highlightCells)
 % Plots the array and canopy given the triangles of the array cells and the mesh of the canopy
 % @param canopy: canopy points -> output of stlread()
 % @param arrayCells: triangles that define the array -> output of cMake()
@@ -7,9 +7,14 @@ function plotArrayCanopy(canopy,arrayCells, numberOfCells)
 fields = fieldnames(arrayCells);
 scatter3(canopy(:, 1), canopy(:, 2), canopy(:, 3), 50, 'filled', 'MarkerFaceColor', 'b');
 hold on;
-colour = 'r';
 
 for i=1:numberOfCells
+    if ismember(i, highlightCells)
+        colour = 'g';
+    else
+        colour = 'r';
+    end
+
     cellName = fields{i};
     triangle = arrayCells.(cellName);
 
@@ -28,6 +33,7 @@ for i=1:numberOfCells
     y = chull_points(:,2);
     z = chull_points(:,3);
     scatter3(x, y, z, 50, 'filled', 'MarkerFaceColor', 'b');
+
     fill3(x, y, z, colour, 'FaceAlpha', 0.3);
 end
 

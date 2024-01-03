@@ -13,14 +13,20 @@ numberOfCells = 257; % <- change this to number of cells in array
 [v_C] = stlread2('./ArraySTLs/canopy.stl'); % <- change this to correct name of canopy stl file
 
 %Create cell structure
-oCells = cMake(numberOfCells); 
+[oCells, totalPoints] = cMake(numberOfCells); 
 warning('off','all');
 
+% Center the array and canopy
+[oCells, v_C] = centerArrayAndCanopy(oCells, v_C, totalPoints);
+
+% Highlight cells
+highlightCells = [178];
+
 % Plot the array and canopy - testing purposes
-plotArrayCanopy(v_C, oCells, numberOfCells);
+plotArrayCanopy(v_C, oCells, numberOfCells, highlightCells);
 
 %Loop over all rows of Az, El, Irr and Time table and find cell irr
-for i = 1:N 
+parfor i = 1:N 
     
     %Read wscAngles csv
     wscAngles = readmatrix('./wscAngles.csv');
@@ -34,14 +40,14 @@ for i = 1:N
     sunVector = create_sun_vector_simple(Az,El,Irr);
 
     %Loop over every cell and remove shaded tris
-    sCells = remShadCellStruc(numberOfCells, sunVector,v_C,oCells);
+    sCells = remShadCellStruc(numberOfCells, sunVector,v_C,oCells,i);
         
     %Find power output of each cell in 'sgtC' structure
     wscIrrCell{i} = cellData(numberOfCells, sunVector,sCells,oCells);
     
-    % if i == 31
+    % if i == 6
     %     clf;
-    %     plotArrayCanopy(v_C, sCells, numberOfCells);
+    %     plotArrayCanopy(v_C, sCells, numberOfCells, highlightCells);
     %     quiver3(0, 0, 0, sunVector(1)*10e5, sunVector(2)*10e5, sunVector(3)*10e5, 'LineWidth', 2, 'Color', 'r');
     % end
 end
