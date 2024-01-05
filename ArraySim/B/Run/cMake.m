@@ -12,7 +12,7 @@ function [orderedCellPoints, origCellPoints, origCellFaces] = cMake(numberOfCell
 % Initialize file names 
 fNames = cell(1,numberOfCells);
 for i = 1:numberOfCells
-    fNames{i} = [cellFilePrefix, '(', int2str(i), ').stl'];
+    fNames{i} = strcat(cellFilePrefix, '(', int2str(i), ').stl');
 end
 
 % Initialize return values

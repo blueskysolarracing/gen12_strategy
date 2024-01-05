@@ -1,4 +1,4 @@
-function [] = main(nCells, direction, outputName, canopyPath, arrayCellsPath)
+function [] = main(nCells, direction, outputName, canopyPath, arrayCellsPath, positionsPath)
 % Main function that computes the n x d csv containing the irradiances on
 % each cell of the array at all azimuth/elevation combos described in the
 % csv from step 1
@@ -11,12 +11,14 @@ function [] = main(nCells, direction, outputName, canopyPath, arrayCellsPath)
 % canopyPath: A string indicating the path to the canopy stl file
 % arrayCellPath: A string indicating the path to the array stl files. Note
 % that each stl file must be numbered in order and have the same prefix
+% positionsPath: A string indicating the path to the simulation sun
+% positions
 
 % Output: 
 % An n x d csv with outputName
 
 %Define parameters
-wscAngles = readmatrix('./wscAngles.csv');
+wscAngles = readmatrix(positionsPath);
 N = size(wscAngles,1); 
 wscIrrCell = cell(N, 1);
 
@@ -32,7 +34,7 @@ plotArrayCanopy(canopyPoints, arrayCellPoints, highlightCells);
 largestCoordinate = max(cat(1, canopyPoints, arrayCellPoints{:}), [], "all");
 
 % Loop over all sun positions described in wscAngles and find irradiance on each cell
-for i = 1:N 
+for i = 1:100
 
     %Extract sun data 
     Az = wscAngles(i,1);
@@ -52,11 +54,5 @@ for i = 1:N
 
 end
 
-%Create wscIrr array 
-wscIrr = zeros(180,numberOfCells);
-for i = 1:size(wscIrrCell,2)
-    wscIrr(i,:) = wscIrrCell{i};
-end 
-
-%Export wscIrr.csv
-writematrix(wscIrr,outputName);
+% Export output csv
+writecell(wscIrrCell,outputName);
