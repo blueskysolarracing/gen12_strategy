@@ -1,37 +1,32 @@
-function [sCells] = remShadCellStruc(C,sunVector,v_C,ogCells,idx)
+function [sCells] = remShadCellStruc(sunPlane,canopyMesh, cellMeshes, cellPoints,idx)
+% Remove shaded triangles of each array cell
+% Parameters:
+% sunPlane: 2 member struct describing plane of the sun
+% canopyMesh: opcode mesh of the canopy
+% cellMeshes: cell array of opcode meshes of each array cell
+% cellPoints: A cell array of n x 3 matrices describing points each array cell with ordering
 
-% C = number of cells 
+% Return:
+% sCells: Same as cellPoints with shaded triangles/points removed
 
-%Store 'cells' field names for easy access
-cN = fieldnames(ogCells);
+numberOfCells = size(cellPoints, 2);
+rays = cell(1, numberOfCells);
+sources = cell(1, numberOfCells);
+sCells = cell(1, numberOfCells);
 
-%Project canopy vertices onto sun vector
-projCanopy = project_onto_sun_vector(sunVector,v_C);
+% Calculate rays extending from each point of the array towards the plane of the sun
+for i = 1:numberOfCells
+    [sources{i}, rays{i}] = calculate_rays(cellPoints{i}, sunPlane);
 
-% Calculate the convex hull of the canopy
-[U,S] = svd(   bsxfun(@minus,projCanopy,mean(projCanopy)),   0);  
-hullIndices = convhull(U*S(:,1:2));
-hullIndices = hullIndices(1:end-1);
-projCanopyConv = projCanopy(hullIndices,:);
+    % Graph rays and sources
+    %scatter3(sources{i}(:,1), sources{i}(:,2), sources{i}(:,3), 'filled');
+    %quiver3(sources{i}(:,1), sources{i}(:,2), sources{i}(:,3), rays{i}(:,1), rays{i}(:,2), rays{i}(:,3),'Color', 'b');
+end
 
-%Loop over every cell and remove shaded tris
-for j = 1:C
-           
-    %Proj cell j's tris onto sun vec
-    projArray = project_onto_sun_vector(sunVector,ogCells.(cN{j}));
-            
-    %Remove cell j's shaded tris 
-    newArray = remove_shaded_triangles(projCanopyConv,projArray,ogCells.(cN{j}));
-            
-    %Add in new set of tris into sCells.tCj
-    sCells.(cN{j}) = newArray;
-
-    if (j == 178) && idx == 6
-        scatter3(projCanopy(:,1), projCanopy(:,2), projCanopy(:,3), 'filled', 'MarkerFaceColor', 'b');
-        scatter3(projArray(:,1), projArray(:,2), projArray(:,3), 'filled', 'MarkerFaceColor','r');
-        newArray = rem_shaded_triangles_plot(projCanopyConv,projArray,ogCells.(cN{j}));
-    end
-            
+% Remove shaded triangles due to canopy and array shading
+for i = 1:numberOfCells
+    newCell = remove_shaded_triangles(canopyMesh, cellMeshes, cellPoints{i}, rays{i}, sources{i}, i);
+    sCells{i} = newCell;
 end
 
 end

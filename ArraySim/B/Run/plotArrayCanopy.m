@@ -1,41 +1,39 @@
-function plotArrayCanopy(canopy,arrayCells, numberOfCells, highlightCells)
-% Plots the array and canopy given the triangles of the array cells and the mesh of the canopy
-% @param canopy: canopy points -> output of stlread()
-% @param arrayCells: triangles that define the array -> output of cMake()
-% @param numberOfCells: Number of array cells
+function plotArrayCanopy(canopy,arrayCells, highlightCells)
+    % Plots the array and canopy given the triangles of the array cells and the mesh of the canopy
+    % @param canopy: canopy points as an n x 3 matrix
+    % @param arrayCells: Cell array of n x 3 matrices that describe points of each cell with ordering
+    % @param highlightCells: array of cell numbers to highlight
 
-fields = fieldnames(arrayCells);
-scatter3(canopy(:, 1), canopy(:, 2), canopy(:, 3), 50, 'filled', 'MarkerFaceColor', 'b');
-hold on;
+    % Plot the canopy
+    scatter3(canopy(:, 1), canopy(:, 2), canopy(:, 3), 50, 'filled', 'MarkerFaceColor', 'b');
+    hold on;
+    xlabel('X-axis');
+    ylabel('Y-axis');
+    zlabel('Z-axis');
 
-for i=1:numberOfCells
-    if ismember(i, highlightCells)
-        colour = 'g';
-    else
+    numberOfCells = size(arrayCells, 2);
+    % Iterate through all triangles of each cell and colour them in
+    for i=1:numberOfCells
         colour = 'r';
-    end
-
-    cellName = fields{i};
-    triangle = arrayCells.(cellName);
-
-    if (size(triangle,1) == 0)
-        continue
-    end
-    x = triangle(:,1);
-    y = triangle(:,2);
-    z = triangle(:,3);
-
-    chull = convhull(x,y);
-    chull = chull(1:end-1);
-    chull_points = triangle(chull,:);
+        if ismember(i, highlightCells)
+            colour = 'g';
+        end
     
-    x = chull_points(:,1);
-    y = chull_points(:,2);
-    z = chull_points(:,3);
-    scatter3(x, y, z, 50, 'filled', 'MarkerFaceColor', 'b');
-
-    fill3(x, y, z, colour, 'FaceAlpha', 0.3);
+        cellTriangles = arrayCells{i};
+        numPoints = size(cellTriangles, 1);
+        if (numPoints == 0)
+            continue;
+        end
+        
+        for j=1:3:numPoints
+            x = cellTriangles(j:j+2,1);
+            y = cellTriangles(j:j+2,2);
+            z = cellTriangles(j:j+2,3);
+    
+            fill3(x, y, z, colour);
+        end
+    end
+    
 end
-
-end
-
+    
+    

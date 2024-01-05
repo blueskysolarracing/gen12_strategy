@@ -1,37 +1,45 @@
-function [newCell] = remove_shaded_triangles(projCanopy,projCell,origVertices)
+function [newCell] = remove_shaded_triangles(canopyMesh, cellMeshes, cellVertices, rays, sources, idx)
+% Remove shaded triangles from an array cell
+% Parameters:
+% canopyMesh: opcode mesh of the canopy
+% cellMeshes: cell array of opcode meshes of each array cell
+% cellVertices: vertices of an array cell as an n x 3 matrix
+% rays: rays of each point extending from the point to the sun plane as an n x 3 matrix
+% sources: source vertices for each triangle of the cell being examined
 
-%Define size  
-N = size(projCell,1);
-V = size(projCanopy,1); 
+% Return:
+% newCell: same as cellVertices with removed rows for shaded triangles
 
-% Iterate through each triangle of the cell
-for i = 1:3:N 
-    
-    % Points of the triangle
-    A = projCell(i,:);
-    B = projCell(i+1,:);
-    C = projCell(i+2,:); 
-    triangle = [A;B;C];
-     
-    allPoints = vertcat(projCanopy, triangle);
-    
-    xyzc = mean(allPoints,1);
-    [~,~,V] = svd(allPoints-xyzc, 0);
-    allPoints2d = allPoints * V(:,1:2);
-    
-    triangle2d = allPoints2d(end-2:end,:);
-    canopy2d = allPoints2d(1:end-3,:);
+numTriangles = size(rays, 1);
+numCells = size(cellMeshes, 2);
 
-    % See if any of the triangle points lie inside the 2d convex hull of
-    % the canopy
-    if (inpolygon(triangle2d(:,1), triangle2d(:,2), canopy2d(:,1), canopy2d(:,2)))
-        origVertices(i:i+2,:) = NaN;
+% Query ray intersection with the canopy
+[hit,~,~,~,~] = canopyMesh.intersect(transpose(sources), transpose(rays));
+
+% Remove shaded triangles
+for i=1:numTriangles
+    if hit(i) == 1
+        cellVertices((i-1)*3 + 1: i*3,:) = NaN;
+    end
+end
+
+% Query ray intersection with all other cell array meshes
+for i=1:numCells
+    if i == idx
+        continue
+    end
+    [hit,~,~,~,~] = cellMeshes{i}.intersect(transpose(sources), transpose(rays));
+
+    for j=1:numTriangles
+        if hit(j) == 1
+            cellVertices((j-1)*3 + 1: j*3,:) = NaN;
+        end
     end
     
 end
 
-origVertices(any(isnan(origVertices),2),:) = [];
-newCell = origVertices;
+cellVertices(any(isnan(cellVertices),2),:) = [];
+newCell = cellVertices;
 
 end
       

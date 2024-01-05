@@ -1,34 +1,37 @@
-function [cellStructure, totalPoints] = cMake(numberofCells) 
-%This function takes in a list of cell stps with tris in them and returns a
-%cell structure that is numbered and ordered along with the total number of
-%points that describe the array
+function [orderedCellPoints, origCellPoints, origCellFaces] = cMake(numberOfCells, cellFilePrefix) 
+% This function reads all cell stls and returns data that describes the points 
+% of all array cells
+% Parameters:
+% numberOfCells: The total number of array cells
+% cellFilePrefix: The prefix to each stl file including the path
+%
+% Returns:
+% orderedCellPoints: A cell array of n x 3 matrices describing points on each cell of the array with ordering
+% origCellPoints, origCellFaces: Cell arrays of n x 3 matrices that are the direct outputs of stlread2 before ordering
 
-C = numberofCells;
-
-%Initiate file names 
-for i = 1:C
-fNames{i} = append('./ArraySTLs/','NA(',int2str(i),').stl');
+% Initialize file names 
+fNames = cell(1,numberOfCells);
+for i = 1:numberOfCells
+    fNames{i} = [cellFilePrefix, '(', int2str(i), ').stl'];
 end
 
-%Initiate cellStructure 
-cellStructure.tC1 = [1];
-
-totalPoints = 0;
+% Initialize return values
+orderedCellPoints = cell(1, numberOfCells);
+origCellPoints = cell(1, numberOfCells);
+origCellFaces = cell(1, numberOfCells);
 
 %Import triangles for cell i 
-for i = 1:size(fNames,2) 
+for i = 1:numberOfCells
     
     %Import tris into cell i
     [v_A,f_A] = stlread2(fNames{i}); 
+    origCellPoints{i} = v_A;
+    origCellFaces{i} = f_A;
     
     %Order array vertices 
     arrayTri = order_vertices(v_A,f_A);
-    
-    totalPoints = totalPoints + size(arrayTri, 1);
+    orderedCellPoints{i} = arrayTri;
 
-    %Add triangles belonging to cell i to tCi field 
-    cellStructure = setfield(cellStructure, ['tC' num2str(i)], arrayTri); 
-    
 end
 
 end 

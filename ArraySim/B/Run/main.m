@@ -1,72 +1,62 @@
-function [newVelocity,totalTime,SOCav,SOCfin] = main(initialVelocity,routeData,overnightData,solarLookup,rollingRes,regenEff,arrayAngle,stopTime)
-%This  function takes in an initial velocity in [km/h] and returns an optimal maximum velocity in [km/h] 
+function [] = main(nCells, direction, outputName, canopyPath, arrayCellsPath)
+% Main function that computes the n x d csv containing the irradiances on
+% each cell of the array at all azimuth/elevation combos described in the
+% csv from step 1
 
-%Define tables to be used 
-routeTable = table2array(routeData); 
-overnightTable = table2array(overnightData);
-solarTable = table2array(solarLookup);
-rollingTable = table2array(rollingRes);
+% Parameters:
+% nCells: Number of cells of the array
+% direction: A string indicating the direction of the nose of the array.
+% Can be one of "+x", "-x", "+y", "-y"
+% outputName: output name of the csv
+% canopyPath: A string indicating the path to the canopy stl file
+% arrayCellPath: A string indicating the path to the array stl files. Note
+% that each stl file must be numbered in order and have the same prefix
 
-%Define tables to be used 
-%routeTable = routeData; 
-%overnightTable = overnightData;
-%solarTable = solarLookup;
-%rollingTable = rollingRes;
+% Output: 
+% An n x d csv with outputName
 
-%Define current speed 
-currentSpeed = initialVelocity; 
+%Define parameters
+wscAngles = readmatrix('./wscAngles.csv');
+N = size(wscAngles,1); 
+wscIrrCell = cell(N, 1);
 
-%Define binary value 
-binary = 1;
+% Import canopy and array cells
+numberOfCells = nCells;
+[canopyMesh, arrayCellMeshes, canopyPoints, arrayCellPoints] = import_canopy_array_stl(canopyPath, arrayCellsPath, numberOfCells);
 
-%While loop for velocity  
-while binary == 1
+% Plot the array and canopy - testing purposes
+highlightCells = [3];
+plotArrayCanopy(canopyPoints, arrayCellPoints, highlightCells);
+
+% Find the largest coordinate value along any dimension
+largestCoordinate = max(cat(1, canopyPoints, arrayCellPoints{:}), [], "all");
+
+% Loop over all sun positions described in wscAngles and find irradiance on each cell
+for i = 1:N 
+
+    %Extract sun data 
+    Az = wscAngles(i,1);
+    El = wscAngles(i,2);
+    Irr = wscAngles(i,3);
+
+    % Create sun plane
+    sunPlane = create_sun_plane(Az, El, direction, largestCoordinate);
+
+    %Loop over every cell and remove shaded triangles
+    sCells = remShadCellStruc(sunPlane, canopyMesh, arrayCellMeshes, arrayCellPoints, i);
+
+    % Find power output of each cell in W/m^2
+    wscIrrCell{i} = cellData(sunPlane,sCells,arrayCellPoints,Irr);
     
-    %Obtain battery charge at current speed
-    [battCharge, finalTime] = batteryCharge(routeTable,overnightTable,solarTable,rollingTable,currentSpeed,regenEff,arrayAngle,stopTime);
-    
-    %Conditionals 
-    if any(battCharge(:)<0) %(adopted from http://bit.ly/3chnATp)
-        
-        binary = 0;
-        
-    else
-        
-        currentSpeed = currentSpeed + 0.5; %[km/h] 
-        
-    end
-    
-end 
-
-%Return new veloctiy
-newVelocity = currentSpeed-0.5; 
-
-%Update battry charge and endtime at optimal speed
-[battCharge, finalTime] = batteryCharge(routeTable,overnightTable,solarTable,rollingTable,newVelocity,regenEff,arrayAngle,stopTime);
-
-%Plot charge vs. distance 
-% f = figure('visible','off');
-% plot(routeTable(:,4),battCharge);
-% title('Battery Charge [kWh] vs. Distance [km]');
-% ylabel('Battery Charge [kWh]');
-% xlabel('Distance [km]');
-% saveas(f,sprintf('regenEff = %f.png', regenEff));
-% hold off 
-
-%Calculate time to completing of race in hours (adopted from http://bit.ly/32A65cA) 
-T_1 = datevec(datenum('12-Oct-2019 23:00:00')); 
-T_2 = finalTime; 
-%totaTime = seconds(etime(T_2,T_1));
-%totaTime.Format = 'hh:mm:ss.SSS'; %(adopted from http://bit.ly/2Pxt9Do) 
-
-%totalTime = totaTime;
-
-totalTime = (etime(T_2,T_1))/3600; 
-
-%Report average battery SOC 
-SOCav = (mean(battCharge)/5)*100; 
-
-%Report final battery SOC 
-SOCfin = (battCharge(length(battCharge))/5)*100; 
+    disp(append("Done Row ", int2str(i)));
 
 end
+
+%Create wscIrr array 
+wscIrr = zeros(180,numberOfCells);
+for i = 1:size(wscIrrCell,2)
+    wscIrr(i,:) = wscIrrCell{i};
+end 
+
+%Export wscIrr.csv
+writematrix(wscIrr,outputName);

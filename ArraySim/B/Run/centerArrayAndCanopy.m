@@ -1,33 +1,34 @@
-function [oCells, v_C] = centerArrayAndCanopy(arrayCells, canopy, totalPoints)
-% Given the struct arrayCells and the point cloud of the canopy, this
-% function centers all elements around the origin
-% @param arrayCells: 1x1 struct of array cells -> output of cMake()
-% @param totalPoints: number of points that describe the array
-% @param canopy: nx3 point cloud of canopy points -> output of stlread2()
+function [oCells, ogCells, v_C] = centerArrayAndCanopy(orderedCellV, canopy, origCells)
+% Centers all array cell points and the canopy point cloud around the origin
+% Parameters:
+% orderedCellV: A cell array of n x 3 matrices that describe points of each cell ordered by triangles
+% canopy: An n x 3 matrix that describe point cloud of the canopy
+% origCells: A cell array of n x 3 matrices that describe points of each cell without ordering
 
-allPoints = zeros(totalPoints+size(canopy, 1), 3);
-index = 1;
-allPoints(index:size(canopy, 1), :) = canopy;
-index = size(canopy, 1);
+% Output:
+% oCells: Same as orderedCellV with shifting
+% ogCells: Same as origCells with shifting
+% v_C: Same as canopy with shifting
 
-cellNames = fieldnames(arrayCells);
-numCells = numel(cellNames);
+% Collect all points from the array and canopy
+allArrayAndCanopyPoints = cat(1, canopy, orderedCellV{:});
 
-for i=1:numCells
-    cellPoints = arrayCells.(cellNames{i});
-    allPoints(index+1:index+size(cellPoints,1), :) = cellPoints;
-    index = index + size(cellPoints, 1);
-end
+% Calculate the centroid by taking the mean along each axis
+centroid = mean(allArrayAndCanopyPoints);
 
-centroid = mean(allPoints);
-
+% Center the canopy
 canopy = bsxfun(@minus, canopy, centroid);
+
+% Center the array
+numCells = size(orderedCellV, 2);
 for i=1:numCells
-    arrayCells.(cellNames{i}) = bsxfun(@minus, arrayCells.(cellNames{i}), centroid);
+    orderedCellV{i} = bsxfun(@minus, orderedCellV{i}, centroid);
+    origCells{i} = bsxfun(@minus, origCells{i}, centroid);
 end
 
 v_C = canopy;
-oCells = arrayCells;
+oCells = orderedCellV;
+ogCells = origCells;
 
 end
 

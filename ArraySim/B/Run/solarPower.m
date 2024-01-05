@@ -1,5 +1,6 @@
-function [solarOutput] = solarPower(sunVector,vertices)
-%Define sizes
+function [solarOutput] = solarPower(sunVector,vertices,Irr)
+% Calculate the solar power in W/m^2
+
 N = size(vertices,1); 
 
 %Define solar output
@@ -20,7 +21,7 @@ for i = 1:3:N
     %Compute area of triangle
     area = 0.5*norm(cross(AB,AC));  
     
-    %Generate unit normal vector
+    %Generate unit normal vector of the triangle
     normal = cross(AB,AC)/norm(cross(AB,AC));
     
     %Ensure normal is facing the +ve Z direction 
@@ -29,15 +30,13 @@ for i = 1:3:N
     end
     
     %Calculate solar energy for triangle
-    solar = dot(sunVector,normal)*area; 
+    solar = dot(sunVector,normal)*area*Irr; 
     
     %Ensure sun is shining from above 
     if solar < 0 
-        solar = abs(solar);
-    else
         solar = 0;
     end
-    
+
     %Update solarOutput
     solarOutput = solarOutput + solar;
     
