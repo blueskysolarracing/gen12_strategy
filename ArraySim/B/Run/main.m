@@ -18,6 +18,8 @@ function [] = main(nCells, direction, outputName, canopyPath, arrayCellsPath, po
 % An n x d csv with outputName
 
 %Define parameters
+%delete(gcp('nocreate'));
+%parpool(6);
 wscAngles = readmatrix(positionsPath);
 N = size(wscAngles,1); 
 wscIrrCell = cell(N, 1);
@@ -34,7 +36,7 @@ plotArrayCanopy(canopyPoints, arrayCellPoints, highlightCells);
 largestCoordinate = max(cat(1, canopyPoints, arrayCellPoints{:}), [], "all");
 
 % Loop over all sun positions described in wscAngles and find irradiance on each cell
-for i = 1:100
+for i = 1:N
 
     %Extract sun data 
     Az = wscAngles(i,1);
