@@ -5,6 +5,7 @@
 #include <cassert>
 #include <fstream>
 #include <units.h>
+#include <geography.h>
 #include <utilities.h>
 #include <limits>
 

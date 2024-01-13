@@ -1,9 +1,11 @@
 #include <base_car.h>
+#include <Luts.h>
 
 /* Getters */
 double Base_Car::get_mass() const {return mass;}
 double Base_Car::get_cda() const {return cda;}
-double Base_Car::get_rr() const {return rr;}
+Eff_Lut Base_Car::get_yint_rr() const {return yint_rolling_resistance;}
+Eff_Lut Base_Car::get_slope_rr() const {return slope_rolling_resistance;}
 double Base_Car::get_motor_efficiency() const {return motor_efficiency;}
 double Base_Car::get_battery_efficiency() const {return battery_efficiency;}
 double Base_Car::get_regen_efficiency() const {return regen_efficiency;}
@@ -15,7 +17,8 @@ double Base_Car::get_max_soc() const {return max_soc;}
 /* Setters */
 void Base_Car::set_mass(double new_mass) {mass = new_mass;}
 void Base_Car::set_cda(double new_cda) {cda = new_cda;}
-void Base_Car::set_rr(double new_rr) {rr = new_rr;}
+void Base_Car::set_yint_rr(Eff_Lut new_yint_rr) {yint_rolling_resistance = new_yint_rr;}
+void Base_Car::set_slope_rr(Eff_Lut new_slope_rr) {slope_rolling_resistance = new_slope_rr;}
 void Base_Car::set_motor_efficiency(double new_motor_efficiency) {motor_efficiency = new_motor_efficiency;}
 void Base_Car::set_battery_efficiency(double new_battery_efficiency) {battery_efficiency = new_battery_efficiency;}
 void Base_Car::set_regen_efficiency(double new_regen_efficiency) {regen_efficiency = new_regen_efficiency;}

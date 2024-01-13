@@ -30,7 +30,7 @@ bool run_sim(Route route, Base_Car* car, std::vector<uint32_t> speed_profile) {
 
         /* Control Stop */
         if (control_stops.find(idx) != control_stops.end()) {
-            energy_change += car->compute_static_energy(coord_one, curr_time);
+            //energy_change += car->compute_static_energy(coord_one, curr_time);
         }
 
         /* Move from point one to point two */

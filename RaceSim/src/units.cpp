@@ -3,26 +3,11 @@
 #include <iostream>
 #include <cmath>
 
-double get_bearing(Coord src_coord, Coord dst_coord) {
-    Coord src_coord_rad = {deg2rad(src_coord.lat), deg2rad(src_coord.lon), src_coord.altitude};
-    Coord dst_coord_rad = {deg2rad(dst_coord.lat), deg2rad(dst_coord.lon), dst_coord.altitude};
-    double delta_lon = dst_coord_rad.lon- src_coord_rad.lon;
-
-    double X = cos(dst_coord_rad.lat)*sin(delta_lon);
-    double Y = (cos(src_coord_rad.lat)*sin(dst_coord_rad.lat))-(sin(src_coord_rad.lat) * cos(dst_coord_rad.lat)* cos(delta_lon));
-
-    if (delta_lon < 0) {
-        return 360 + rad2deg(atan2(X,Y));
-    } else {
-        return rad2deg(atan2(X,Y));
-    }
-}
-
-SolarAngle get_az_el_from_bearing(double bearing_degrees, Coord coord, Time time) {
+SolarAngle get_az_el_from_bearing(double bearing, Coord coord, Time time) {
     SolarAngle sun;
     get_az_el(time.get_utc_time_point(), coord.lat, coord.lon, coord.altitude, &sun.Az, &sun.El);
     // Get the relative azimuth angle based on bearing from true north.
-    sun.Az = sun.Az + 180 - bearing_degrees;
+    sun.Az = sun.Az + 180 - bearing;
     if (sun.Az < 0) {
         sun.Az = 360 + sun.Az;
     } else if (sun.Az > 360) {
@@ -31,31 +16,31 @@ SolarAngle get_az_el_from_bearing(double bearing_degrees, Coord coord, Time time
     return sun;
 }
 
-double get_speed_relative_to_wind_kph(double car_speed_kph, double car_bearing_degrees, Wind wind) {
+double get_speed_relative_to_wind(double car_speed, double car_bearing, Wind wind) {
     // Subtract wind speed because the bearing points the wind towards and the car points from the origin.
 
     // Make wind bearing point away from the origin
-    double wind_bearing = wind.bearing_degrees < 180.0 ? wind.bearing_degrees + 180.0 : wind.bearing_degrees - 180.0;
+    double wind_bearing = wind.bearing < 180.0 ? wind.bearing + 180.0 : wind.bearing - 180.0;
 
     // Calculate angle between wind and car vector
-    double interior_angle = std::abs(wind_bearing - car_bearing_degrees);	
+    double interior_angle = std::abs(wind_bearing - car_bearing);	
     double relative_wind_speed = 0.0;
 
     if (interior_angle < 90.0 && interior_angle > 0.0) { // tailwind
-        relative_wind_speed = -1 * cos(deg2rad(interior_angle)) * wind.speed_kph;
+        relative_wind_speed = -1 * cos(deg2rad(interior_angle)) * wind.speed;
     } else if (interior_angle > 90.0 && interior_angle < 180.0) { // headwind
-        relative_wind_speed = sin(deg2rad(interior_angle-90.0)) * wind.speed_kph;
+        relative_wind_speed = sin(deg2rad(interior_angle-90.0)) * wind.speed;
     } else if (interior_angle > 180.0 && interior_angle < 270.0) { // headwind
-        relative_wind_speed = cos(deg2rad(interior_angle-180.0)) * wind.speed_kph;
+        relative_wind_speed = cos(deg2rad(interior_angle-180.0)) * wind.speed;
     } else if (interior_angle > 270.0 && interior_angle < 360.0) { // tailwind
-        relative_wind_speed = -1 * sin(deg2rad(interior_angle - 270.0)) * wind.speed_kph;
+        relative_wind_speed = -1 * sin(deg2rad(interior_angle - 270.0)) * wind.speed;
     } else if (interior_angle == 180.0) { // direct headwind
-        relative_wind_speed = wind.speed_kph;
+        relative_wind_speed = wind.speed;
     } else if (interior_angle == 0.0) { // direct tailwind
-        relative_wind_speed = -1 * wind.speed_kph;
+        relative_wind_speed = -1 * wind.speed;
     }
 
-    return car_speed_kph + relative_wind_speed;
+    return car_speed + relative_wind_speed;
 }
 
 double julian_day(time_t utc_time_point) {

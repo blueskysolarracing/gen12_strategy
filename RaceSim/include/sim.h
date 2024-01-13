@@ -1,5 +1,5 @@
 /* 
-Base class for simulating a car travelling a route
+Functions to simulate the car traversing a designated route
 */
 
 #ifndef SIM_H

@@ -9,9 +9,14 @@ This framework intends to provide a variety of optimization algorithms and car m
 
 # Units
 By default, all units are listed below. Any others not mentioned are also in the base metric system.\
-energy -> kWh\
-speed -> m/s\
-mass -> kg\
+energy -> kilowatthour\
+power -> Watt\
+speed -> meters / second\
+mass -> kilogram\
 temperature -> celsius\
-distance -> m\
-degrees -> degrees
+distance -> meters\
+angles -> degrees\
+force -> newton\
+area -> meters squared\
+
+When naming variables representing a scientific unit, please include the units if it's not in the base metric system or any of the ones listed above e.g. ```double speed_kph = 70.2;```

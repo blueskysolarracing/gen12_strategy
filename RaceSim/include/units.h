@@ -1,3 +1,7 @@
+/*
+Definitions and functions for scientific units, custom objects, conversion functions and utility functions
+*/
+
 #ifndef UNITS_H
 #define UNITS_H
 
@@ -19,24 +23,50 @@ struct Coord {
 };
 
 struct Wind {
-	double bearing_degrees;
-	double speed_kph;
+	double bearing;
+	double speed;
 
-	Wind(double b_degrees, double s_kph) : bearing_degrees(b_degrees), speed_kph(s_kph) {}
+	Wind(double b, double s) : bearing(b), speed(s) {}
 };
 
 struct SolarAngle {
 	double Az;
 	double El;
+
+	SolarAngle(double az_angle, double el_angle) : Az(az_angle), El(el_angle) {}
+	SolarAngle() : Az(0.0), El(0.0) {}
 };
 
-/* Represents an efficicency lookup table loaded in from a csv */
-struct EfficiencyLut {
-	std::vector<double> column_values;
-	std::vector<double> row_values;
-	std::vector<std::vector<double>> values;
+struct TireCoeff {
+	double yint;
+	double slope;
 
-	void load_eff_lut(std::string lut_path);
+	TireCoeff(double y, double s) : yint(y), slope(s) {}
+};
+
+struct Irradiance {
+	double dni;
+	double dhi;
+
+	Irradiance(double _dni, double _dhi) : dni(_dni), dhi(_dhi) {}
+};
+
+/* Coordinate used to query a forecast lookup table */
+struct ForecastCoord {
+	double lat;
+	double lon;
+
+	ForecastCoord(double _lat, double _lon) : lat(_lat), lon(_lon) {}
+};
+
+/* Each energy loss/gain (e.g. rolling resistance, aerodynamic, gravity) is characterized by both its
+   actual energy lost/gained and the instataneous power drawn/generated
+*/
+struct Energy_Change {
+	double power;
+	double energy;
+
+	Energy_Change(double p, double e) : power(p), energy(e) {}
 };
 
 /* Wraps the C++ epoch time to represent a timestamp */
@@ -57,21 +87,20 @@ private:
 };
 
 /* Unit conversions */
-inline double rad2deg(double radians) { return radians * 180 / M_PI; }
-inline double deg2rad(double degrees) { return degrees * M_PI / 180; }
-inline double hours2secs(double hours) { return hours * 3.6e3; }
-inline double secs2hours(double seconds) { return seconds / 3.6e3; }
-inline double kph2mps(double kph) { return kph / 3.6; }
-inline double joules2kwh(double joules) { return joules / 3.6e6; }
+inline double rad2deg(double radians) { return radians * DEGREES_IN_PI / M_PI; }
+inline double deg2rad(double degrees) { return degrees * M_PI / DEGREES_IN_PI; }
+inline double hours2secs(double hours) { return hours * HOURS_TO_SECONDS; }
+inline double secs2hours(double seconds) { return seconds / HOURS_TO_SECONDS; }
+inline double kph2mps(double kph) { return kph / MPS_TO_KPH; }
+inline double mps2kph(double mps) { return mps * MPS_TO_KPH; }
+inline double joules2kwh(double joules) { return joules / JOULES_TO_KWH; }
+inline double watts2kwh(double time, double watts) { return watts * (secs2hours(time) / 1000.0);}
 
-/* Get bearing in degrees clockwise from true north */
-double get_bearing(Coord src_coord, Coord dst_coord);
-
-/* Get azimuth and elevation of the sun from the car's location, bearing and time of day */
-SolarAngle get_az_el_from_bearing(double bearing_degrees, Coord coord, Time time);
+/* Azimuth and elevation of the sun from the car's location, bearing and time of day */
+SolarAngle get_az_el_from_bearing(double bearing, Coord coord, Time time);
 
 /* Get car speed relative to wind - only headwind considered */
-double get_speed_relative_to_wind_kph(double car_speed_kph, double car_bearing_degrees, Wind wind);
+double get_speed_relative_to_wind(double car_speed, double car_bearing, Wind wind);
 
 /* Get julian day (days since first julian period) from a utc time */
 double julian_day(time_t utc_time_point);
