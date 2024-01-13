@@ -5,7 +5,7 @@
 
 SolarAngle get_az_el_from_bearing(double bearing, Coord coord, Time time) {
     SolarAngle sun;
-    get_az_el(time.get_utc_time_point(), coord.lat, coord.lon, coord.altitude, &sun.Az, &sun.El);
+    get_az_el(time.get_utc_time_point(), coord.lat, coord.lon, coord.alt, &sun.Az, &sun.El);
     // Get the relative azimuth angle based on bearing from true north.
     sun.Az = sun.Az + 180 - bearing;
     if (sun.Az < 0) {

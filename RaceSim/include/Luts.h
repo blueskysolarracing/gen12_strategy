@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string>
 
+/* Represents an efficiency lookup table */
 class Eff_Lut {
 private:
     /* Index values that run along the first row of the csv */
@@ -40,22 +41,33 @@ public:
 
     /* Load a csv upon construction */
     Eff_Lut(std::string lut_path);
+    Eff_Lut();
 };
 
+/* Represents a forecast lookup table */
 class Forecast_Lut {
 private:
     /* LUT stored as a matrix */
-    std::vector<std::vector<double>> power_factor;
+    std::vector<std::vector<double>> forecast_values;
 
     /* Coordinates used to index the lookup table */
-    std::vector<ForecastCoord> forecast_coords;
+    std::vector<Coord> forecast_coords;
 
     /* Timesteps used to index the lookup table as unix epoch times */
     std::vector<uint64_t> forecast_times;
 
+    /* Dimensions of the csv */
+    size_t num_rows;
+    size_t num_cols;
+
 public:
     /* Load a csv upon construction */
     Forecast_Lut(std::string lut_path);
+
+    Forecast_Lut();
+
+    /* Get a certain value with lat/lon and unix time as keys. Uses the closest keys */
+    double get_value(Coord coord, time_t time);
 };
 
 #endif

@@ -1,28 +1,22 @@
 #include <base_car.h>
 #include <Luts.h>
+#include <config.h>
 
-/* Getters */
-double Base_Car::get_mass() const {return mass;}
-double Base_Car::get_cda() const {return cda;}
-Eff_Lut Base_Car::get_yint_rr() const {return yint_rolling_resistance;}
-Eff_Lut Base_Car::get_slope_rr() const {return slope_rolling_resistance;}
-double Base_Car::get_motor_efficiency() const {return motor_efficiency;}
-double Base_Car::get_battery_efficiency() const {return battery_efficiency;}
-double Base_Car::get_regen_efficiency() const {return regen_efficiency;}
-double Base_Car::get_passive_electric_loss() const {return passive_electric_loss;}
-double Base_Car::get_array_area() const {return array_area;}
-double Base_Car::get_air_density() const {return air_density;}
-double Base_Car::get_max_soc() const {return max_soc;}
-
-/* Setters */
-void Base_Car::set_mass(double new_mass) {mass = new_mass;}
-void Base_Car::set_cda(double new_cda) {cda = new_cda;}
-void Base_Car::set_yint_rr(Eff_Lut new_yint_rr) {yint_rolling_resistance = new_yint_rr;}
-void Base_Car::set_slope_rr(Eff_Lut new_slope_rr) {slope_rolling_resistance = new_slope_rr;}
-void Base_Car::set_motor_efficiency(double new_motor_efficiency) {motor_efficiency = new_motor_efficiency;}
-void Base_Car::set_battery_efficiency(double new_battery_efficiency) {battery_efficiency = new_battery_efficiency;}
-void Base_Car::set_regen_efficiency(double new_regen_efficiency) {regen_efficiency = new_regen_efficiency;}
-void Base_Car::set_passive_electric_loss(double new_passive_electric_loss) {passive_electric_loss = new_passive_electric_loss;}
-void Base_Car::set_array_area(double new_array_area) {array_area = new_array_area;}
-void Base_Car::set_air_density(double new_air_density) {air_density = new_air_density;}
-void Base_Car::set_max_soc(double new_max_soc) {max_soc = new_max_soc;}
+/* Load all LUTs and car parameters */
+Base_Car::Base_Car() {
+    Config* param = Config::get_instance();
+    yint_rolling_resistance = Eff_Lut(param->get_roll_res_yint_path());
+    slope_rolling_resistance = Eff_Lut(param->get_roll_res_slope_path());
+    power_factors = Eff_Lut(param->get_power_factor_path());
+    mass = param->get_car_mass();
+    cda = param->get_cda();
+    motor_efficiency = param->get_motor_efficiency();
+    regen_efficiency = param->get_regen_efficiency();
+    battery_efficiency = param->get_battery_efficiency();
+    passive_electric_loss = param->get_passive_elec_loss();
+    air_density = param->get_air_density();
+    array_area = param->get_array_area();
+    max_soc = param->get_max_soc();
+    tire_pressure = param->get_tire_pressure();
+    array_efficiency = param->get_array_eff();
+}

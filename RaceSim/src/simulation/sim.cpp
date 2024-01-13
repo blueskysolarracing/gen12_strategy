@@ -3,8 +3,10 @@
 #include <assert.h>
 #include <units.h>
 #include <unordered_set>
+#include <string.h>
+#include <config.h>
 
-bool run_sim(Route route, Base_Car* car, std::vector<uint32_t> speed_profile) {
+bool Sim::run_sim(Route route, Base_Car* car, std::vector<uint32_t> speed_profile) {
     assert(speed_profile.size() == route.get_num_segments());
 
     uint32_t num_points = route.get_num_points();
@@ -14,13 +16,11 @@ bool run_sim(Route route, Base_Car* car, std::vector<uint32_t> speed_profile) {
 
     assert(segments.size() == speed_profile.size());
 
-    double net_energy = car->get_max_soc();
-
     uint32_t segment_counter = 0;
     std::pair<uint32_t, uint32_t> current_segment = segments[segment_counter];
     uint32_t current_speed = speed_profile[segment_counter];
 
-    /* Todo, make this start at some set time */
+    /* Todo, make this start at some set time and update it during the loop */
     Time curr_time = Time();
 
     for (size_t idx=0; idx<num_points-1; idx++) {
@@ -40,15 +40,34 @@ bool run_sim(Route route, Base_Car* car, std::vector<uint32_t> speed_profile) {
             current_speed = speed_profile[segment_counter];
         }
 
-        energy_change += car->compute_travel_energy(coord_one, coord_two, current_speed);
+        /* Get forecasting data - wind and irradiance */
+        double wind_speed = wind_speed_lut.get_value(coord_one, curr_time.get_utc_time_point());
+        double wind_dir = wind_dir_lut.get_value(coord_one, curr_time.get_utc_time_point());
+        double dni = dni_lut.get_value(coord_one, curr_time.get_utc_time_point());
+        double dhi = dhi_lut.get_value(coord_one, curr_time.get_utc_time_point());
 
-        net_energy += energy_change;
+        Wind wind = Wind(wind_dir, wind_speed);
+        Irradiance irr = Irradiance(dni, dhi);
+
+        energy_change += car->compute_travel_energy(coord_one, coord_two, current_speed, curr_time, wind, irr);
+
+        battery_energy += energy_change;
 
         /* Penalize a minimum soc bound TODO */
-        if (net_energy < 0.0) {
+        if (battery_energy < 0.0) {
             return false;
         }
     }
 
     return true;
+}
+
+Sim::Sim() {
+    Config* params = Config::get_instance();
+
+    wind_speed_lut = Forecast_Lut(params->get_wind_speed_path());
+    wind_dir_lut = Forecast_Lut(params->get_wind_dir_path());
+    dni_lut = Forecast_Lut(params->get_dni_path());
+    dhi_lut = Forecast_Lut(params->get_dhi_path());
+    battery_energy = params->get_max_soc();
 }

@@ -9,6 +9,7 @@
 #include <geography.h>
 #include <cmath>
 
+/* TODO: Check if this function returns in metres */
 double get_distance(Coord src_coord, Coord dst_coord) {
 	constexpr double R = 6371e3; 
 
@@ -24,8 +25,8 @@ double get_distance(Coord src_coord, Coord dst_coord) {
 	double dist_km = (R * c)/1000;
 
 	// calculate altitude
-	double alt_1 = src_coord.altitude;
-	double alt_2 = dst_coord.altitude;
+	double alt_1 = src_coord.alt;
+	double alt_2 = dst_coord.alt;
 
 	double alt_difference = abs(alt_1-alt_2);
 
@@ -36,8 +37,8 @@ double get_distance(Coord src_coord, Coord dst_coord) {
 }
 
 double get_bearing(Coord src_coord, Coord dst_coord) {
-    Coord src_coord_rad = {deg2rad(src_coord.lat), deg2rad(src_coord.lon), src_coord.altitude};
-    Coord dst_coord_rad = {deg2rad(dst_coord.lat), deg2rad(dst_coord.lon), dst_coord.altitude};
+    Coord src_coord_rad = {deg2rad(src_coord.lat), deg2rad(src_coord.lon), src_coord.alt};
+    Coord dst_coord_rad = {deg2rad(dst_coord.lat), deg2rad(dst_coord.lon), dst_coord.alt};
     double delta_lon = dst_coord_rad.lon- src_coord_rad.lon;
 
     double X = cos(dst_coord_rad.lat)*sin(delta_lon);

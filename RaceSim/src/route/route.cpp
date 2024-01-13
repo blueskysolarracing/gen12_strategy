@@ -48,7 +48,7 @@ Route::Route(std::string route_path) {
 
 			std::getline(linestream, cell, ',');
 			assert(isDouble(cell) && "Value is not a number.");
-			coord.altitude = std::stod(cell);
+			coord.alt = std::stod(cell);
 
 			route_points.emplace_back(coord);
 		}

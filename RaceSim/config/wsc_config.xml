@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<struct>
+    <Car>
+        <Generation>Gen 12</Generation>
+        <!--kwh-->
+        <MaxBatteryCharge>5.2</MaxBatteryCharge>
+        <!--bar-->
+        <TirePressure>5.5</TirePressure>
+        <!--meters squared-->
+        <ArrayArea>3.98</ArrayArea>
+        <ArrayEfficiency>0.252</ArrayEfficiency>
+        <!--kg-->
+        <CarMass>305</CarMass>
+        <!--kg/m^3-->
+        <AirDensity>1.17</AirDensity>
+        <!--watts-->
+        <PassiveElectricLoss>20</PassiveElectricLoss>
+        <MotorEfficiency>0.9</MotorEfficiency>
+        <RegenEfficiency>0.8</RegenEfficiency>
+        <BatteryEfficiency>0.95</BatteryEfficiency>
+        <cda>0.16</cda>
+        <!--kwh-->
+        <MaxMotorPower>3.5</MaxMotorPower>
+    </Car>
+    <LutPaths>
+        <BaseRoute>/static/baseroute.csv</BaseRoute>
+        <SpeedLimits>/static/longDistanceSpeedlimit.csv</SpeedLimits>
+        <TrafficSignals>/static/longDistanceTrafficSignals.csv</TrafficSignals>
+        <dni>/dynamic/dni.csv</dni>
+        <dhi>/dynamic/dhi.csv</dhi>
+        <WindDirection>/dynamic/wind_direction_10m.csv</WindDirection>
+        <WindSpeed>/dynamic/wind_speed_10m.csv</WindSpeed>
+        <PowerFactor>/static/powerfactor.csv</PowerFactor>
+        <rr2>/static/rr2.csv</rr2>
+        <rr1>/static/rr1.csv</rr1>
+        <DrivingEfficiency>/static/drivingeff.csv</DrivingEfficiency>
+        <RegenEfficiency>/static/regeneff.csv</RegenEfficiency>
+        <BatteryEfficiency>/static/batteff.csv</BatteryEfficiency>
+    </LutPaths>
+    <Route>
+        <RouteType>wsc_2023</RouteType>
+        <!--Coordinate indices in the route csv where control stops occur-->
+        <ControlStops>2962,5559,9462,11421,14439,16990,20832,23202,25987</ControlStops>
+        <!--How long the car can CHARGE at a control stop in minutes-->
+        <ControlStopChargeTime>30</ControlStopChargeTime>
+        <!--24 hour time-->
+        <RaceStartTime>8</RaceStartTime>
+        <!--24 hour time-->
+        <RaceEndTime>17</RaceEndTime>
+    </Route>
+    <Telemetry>
+        <!--Celsius - UNUSED -->
+        <BatteryTemperature>33</BatteryTemperature>
+        <!--Current lat, lon, alt. Don't include any spaces. The route is in terms of N (lat), and E (lon) coordinates.-->
+        <GpsCoordinates>-12.464951,130.843603,0.0247</GpsCoordinates>
+        <!--percentage out of 100. Starting SOC of a sim will be calculated as CurrentSoc / 100 * MaxBatteryCharge-->
+        <CurrentSOC>100</CurrentSOC>
+        <EndingSOC>0</EndingSOC>
+        <!--YYYY/MM/DD/HH/MM/SS local time. Hour MUST be in 24 hour format-->
+        <CurrentDateTime>2023/10/22/08/45/00</CurrentDateTime>
+        <!--YYYY/MM/DD/HH/MM/SS local time. Hour MUST be in 24 hour format. Used for stationary simulation only-->
+        <EndDateTime>2023/09/27/08/00/00</EndDateTime>
+        <!--In hours-->
+        <UTCAdjustment>-9.5</UTCAdjustment>
+    </Telemetry>
+
+    <Strategy>
+        <!--km/h-->
+        <MinSpeed>40</MinSpeed>
+        <!--km/h-->
+        <MaxSpeed>100</MaxSpeed>
+        <StationarySimulation>False</StationarySimulation>
+        <!--Number of times to loop the coordinates in the route csv. Should be 1 for main race-->
+        <NumLoops>1</NumLoops>
+        <!--Simulation Types: -->
+        <!--1: Loop through all coordinates in the route csv NumLoops times. The sim is feasible if battery energy > EndingSOC for all time -->
+        <!--2: Output optimal speed that allows you to complete NumLoops of the route csv and end as close to EndSOC. Will try 1-150 kmph -->
+        <!--3: Get motor power only from MinSpeed to MaxSpeed-->
+        <SimulationType>1</SimulationType>
+        <!--The maximum power that the array can generate in Watts-->
+        <ArrayPowerMax>850</ArrayPowerMax>
+        <!--Coefficient applied to scale the array gains -->
+        <ArrayGainScaling>1</ArrayGainScaling>
+        <!--Coefficient applied to scale the rolling resistance -->
+        <RollingResistanceScaling>1</RollingResistanceScaling>
+        <!--Coefficient applied to scale the aerodynamic loss -->
+        <AerodynamicScaling>1</AerodynamicScaling>
+        <!--Coefficient applied to scale the passive electric loss -->
+        <PassiveElectricScaling>1</PassiveElectricScaling>
+        <!--Coefficient applied to scale the gravitational loss -->
+        <GravityScaling>1</GravityScaling>
+        <!--Coefficient applied to scale the motor loss, note that motor loss = rolling + aero + gravitational -->
+        <MotorScaling>1</MotorScaling>
+        <!--Coefficient applied to scale the wind speed -->
+        <WindSpeedScaling>1</WindSpeedScaling>
+    </Strategy>
+</struct>

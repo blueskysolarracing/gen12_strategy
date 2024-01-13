@@ -16,10 +16,10 @@ Definitions and functions for scientific units, custom objects, conversion funct
 struct Coord {
 	double lat;
 	double lon;
-	double altitude;
+	double alt;
 
-	Coord(double latitude, double longitude, double altitude) : lat(latitude), lon(longitude), altitude(altitude) {}
-	Coord() : lat(0), lon(0), altitude(0) {}
+	Coord(double latitude, double longitude, double altitude) : lat(latitude), lon(longitude), alt(altitude) {}
+	Coord() : lat(0), lon(0), alt(0) {}
 };
 
 struct Wind {
@@ -27,6 +27,7 @@ struct Wind {
 	double speed;
 
 	Wind(double b, double s) : bearing(b), speed(s) {}
+	Wind() : bearing(0), speed(0) {}
 };
 
 struct SolarAngle {
@@ -42,6 +43,7 @@ struct TireCoeff {
 	double slope;
 
 	TireCoeff(double y, double s) : yint(y), slope(s) {}
+	TireCoeff() : yint(0), slope(0) {}
 };
 
 struct Irradiance {
@@ -49,14 +51,7 @@ struct Irradiance {
 	double dhi;
 
 	Irradiance(double _dni, double _dhi) : dni(_dni), dhi(_dhi) {}
-};
-
-/* Coordinate used to query a forecast lookup table */
-struct ForecastCoord {
-	double lat;
-	double lon;
-
-	ForecastCoord(double _lat, double _lon) : lat(_lat), lon(_lon) {}
+	Irradiance() : dni(0), dhi(0) {}
 };
 
 /* Each energy loss/gain (e.g. rolling resistance, aerodynamic, gravity) is characterized by both its
@@ -67,6 +62,7 @@ struct Energy_Change {
 	double energy;
 
 	Energy_Change(double p, double e) : power(p), energy(e) {}
+	Energy_Change() : power(0), energy(0) {}
 };
 
 /* Wraps the C++ epoch time to represent a timestamp */
@@ -96,7 +92,9 @@ inline double mps2kph(double mps) { return mps * MPS_TO_KPH; }
 inline double joules2kwh(double joules) { return joules / JOULES_TO_KWH; }
 inline double watts2kwh(double time, double watts) { return watts * (secs2hours(time) / 1000.0);}
 
-/* Azimuth and elevation of the sun from the car's location, bearing and time of day */
+/* Azimuth and elevation of the sun from the car's location, bearing and time of day
+   TODO: Need to make sure that this is degrees clockwise from the nose of the car!!!
+ */
 SolarAngle get_az_el_from_bearing(double bearing, Coord coord, Time time);
 
 /* Get car speed relative to wind - only headwind considered */
