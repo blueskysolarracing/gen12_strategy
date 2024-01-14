@@ -28,9 +28,26 @@ bool Sim::run_sim(Route route, Base_Car* car, std::vector<uint32_t> speed_profil
         Coord coord_two = route_points[idx+1];
         double energy_change = 0.0;
 
+        /* Get forecasting data - wind and irradiance */
+        ForecastCoord coord_one_forecast = ForecastCoord(coord_one.lat, coord_one.lon);
+        wind_speed_lut.update_index_cache(coord_one_forecast, curr_time.get_utc_time_point());
+        double wind_speed = wind_speed_lut.get_value_with_cache();
+
+        wind_dir_lut.update_index_cache(coord_one_forecast, curr_time.get_utc_time_point());
+        double wind_dir = wind_dir_lut.get_value_with_cache();
+
+        dni_lut.update_index_cache(coord_one_forecast, curr_time.get_utc_time_point());
+        double dni = dni_lut.get_value_with_cache();
+
+        dhi_lut.update_index_cache(coord_one_forecast, curr_time.get_utc_time_point());
+        double dhi = dhi_lut.get_value_with_cache();
+
+        Wind wind = Wind(wind_dir, wind_speed);
+        Irradiance irr = Irradiance(dni, dhi);
+
         /* Control Stop */
         if (control_stops.find(idx) != control_stops.end()) {
-            //energy_change += car->compute_static_energy(coord_one, curr_time);
+            energy_change += car->compute_static_energy(coord_one, curr_time, control_stop_charge_time, irr);
         }
 
         /* Move from point one to point two */
@@ -39,15 +56,6 @@ bool Sim::run_sim(Route route, Base_Car* car, std::vector<uint32_t> speed_profil
             current_segment = segments[segment_counter];
             current_speed = speed_profile[segment_counter];
         }
-
-        /* Get forecasting data - wind and irradiance */
-        double wind_speed = wind_speed_lut.get_value(coord_one, curr_time.get_utc_time_point());
-        double wind_dir = wind_dir_lut.get_value(coord_one, curr_time.get_utc_time_point());
-        double dni = dni_lut.get_value(coord_one, curr_time.get_utc_time_point());
-        double dhi = dhi_lut.get_value(coord_one, curr_time.get_utc_time_point());
-
-        Wind wind = Wind(wind_dir, wind_speed);
-        Irradiance irr = Irradiance(dni, dhi);
 
         energy_change += car->compute_travel_energy(coord_one, coord_two, current_speed, curr_time, wind, irr);
 
@@ -70,4 +78,5 @@ Sim::Sim() {
     dni_lut = Forecast_Lut(params->get_dni_path());
     dhi_lut = Forecast_Lut(params->get_dhi_path());
     battery_energy = params->get_max_soc();
+    control_stop_charge_time = params->get_control_stop_charge_time();
 }

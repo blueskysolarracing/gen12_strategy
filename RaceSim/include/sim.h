@@ -21,6 +21,9 @@ private:
    Forecast_Lut dni_lut;
    Forecast_Lut dhi_lut;
 
+   /* Simulation parameters */
+   double control_stop_charge_time;
+
    /* Internal running state of the simulation */
    Time curr_time;
    double battery_energy;

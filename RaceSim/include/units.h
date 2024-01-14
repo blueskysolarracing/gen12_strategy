@@ -22,6 +22,15 @@ struct Coord {
 	Coord() : lat(0), lon(0), alt(0) {}
 };
 
+/* A forecast coordinate is represented only by latitude and longitude */
+struct ForecastCoord {
+	double lat;
+	double lon;
+
+	ForecastCoord(double latitude, double longitude) : lat(latitude), lon(longitude) {}
+	ForecastCoord() : lat(0), lon(0) {}
+};
+
 struct Wind {
 	double bearing;
 	double speed;

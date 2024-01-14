@@ -116,7 +116,7 @@ Forecast_Lut::Forecast_Lut(std::string lut_path) {
 		if (file_linestream.str().empty()) break;
 
 		std::string cell;
-		Coord coord{};
+		ForecastCoord coord{};
 		std::getline(file_linestream, cell, ',');
 		assert(isDouble(cell) && "Value is not a number.");
 		coord.lat = std::stod(cell);
@@ -141,6 +141,9 @@ Forecast_Lut::Forecast_Lut(std::string lut_path) {
 
 	num_rows = forecast_coords.size();
 	num_cols = forecast_times.size();
+
+	row_cache = 0;
+	column_cache = 0;
 }
 
 Forecast_Lut::Forecast_Lut() {
@@ -148,14 +151,14 @@ Forecast_Lut::Forecast_Lut() {
 	return;
 }
 
-double Forecast_Lut::get_value(Coord coord, time_t time) {
-	double min_distance = std::numeric_limits<double>::max();
-
+double Forecast_Lut::get_value(ForecastCoord coord, time_t time) {
 	double row_key;
 	double col_key;
+
+	double min_distance = std::numeric_limits<double>::max();
     for (size_t row=0; row < num_rows; row++) {
-        Coord forecast_coord = forecast_coords[row];
-		double distance = get_distance(coord, forecast_coord);
+        ForecastCoord forecast_coord = forecast_coords[row];
+		double distance = get_forecast_coord_distance(coord, forecast_coord);
 		if (distance < min_distance) {
 			min_distance = distance;
 			row_key = row;
@@ -164,8 +167,8 @@ double Forecast_Lut::get_value(Coord coord, time_t time) {
 
 	double min_time = std::numeric_limits<double>::max();
     for (size_t col=0; col < num_cols; col++) {
-        uint64_t curr_time = forecast_times[col];
-		int time_diff = time - curr_time;
+        uint64_t forecast_time = forecast_times[col];
+		int time_diff = time - forecast_time;
 		if (std::abs((double) time_diff) < min_time) {
 			min_time = std::abs((double) time_diff);
 			col_key = col;
@@ -173,4 +176,36 @@ double Forecast_Lut::get_value(Coord coord, time_t time) {
     }
 
     return forecast_values[row_key][col_key];
+}
+
+/* Begins searching from the specified indices */
+void Forecast_Lut::update_index_cache(ForecastCoord coord, time_t time) {
+
+	if (row_cache < num_rows-1) {
+		ForecastCoord next_coord = forecast_coords[row_cache+1];
+		ForecastCoord current_coord = forecast_coords[row_cache];
+		
+		double dist_from_current_coord = get_forecast_coord_distance(coord, current_coord);
+		double dist_from_next_coord = get_forecast_coord_distance(coord, next_coord);
+
+		row_cache = dist_from_current_coord <= dist_from_next_coord ? row_cache : row_cache+1;
+	} else {
+		row_cache = row_cache;
+	}
+
+	if (column_cache < num_cols-1) {
+		uint64_t current_time = forecast_times[column_cache];
+		uint64_t next_time = forecast_times[column_cache+1];
+
+		uint64_t diff_time_from_current = abs((double) (time - current_time));
+		uint64_t diff_time_from_next = abs((double) (time - next_time));
+
+		column_cache = diff_time_from_current <= diff_time_from_next ? column_cache : column_cache+1;
+	} else {
+		column_cache = column_cache;
+	}
+}
+
+double Forecast_Lut::get_value_with_cache() {
+	return forecast_values[row_cache][column_cache];
 }

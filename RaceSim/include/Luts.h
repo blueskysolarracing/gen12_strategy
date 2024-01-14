@@ -51,7 +51,7 @@ private:
     std::vector<std::vector<double>> forecast_values;
 
     /* Coordinates used to index the lookup table */
-    std::vector<Coord> forecast_coords;
+    std::vector<ForecastCoord> forecast_coords;
 
     /* Timesteps used to index the lookup table as unix epoch times */
     std::vector<uint64_t> forecast_times;
@@ -63,11 +63,20 @@ private:
 public:
     /* Load a csv upon construction */
     Forecast_Lut(std::string lut_path);
-
     Forecast_Lut();
 
     /* Get a certain value with lat/lon and unix time as keys. Uses the closest keys */
-    double get_value(Coord coord, time_t time);
+    double get_value(ForecastCoord coord, time_t time);
+
+    /* Caches for faster accessing */
+    int row_cache;
+    int column_cache;
+
+    /* Directly indexes the csv to return a value */
+    double get_value_with_cache();
+
+    /* Updates the index_cache struct using new keys */
+    void update_index_cache(ForecastCoord coord, time_t time);
 };
 
 #endif

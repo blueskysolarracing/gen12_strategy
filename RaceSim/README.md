@@ -13,7 +13,7 @@ From Gen12_Strategy/RaceSim/
 As of January 12th, 2024, this framework can only assess the viability of a speed profile given the gen 11.5 car model and the necessary LUTs. The following ```main.cpp``` demonstrates the method by which to do this
 
 # Scientific Units used 
-All units are listed below. Any others not mentioned are also in the base metric system. The configuration file specifies units and is ultimately converted to these units\
+All units are listed below. Any others not mentioned are also in the base metric system. The configuration file specifies units and is ultimately converted to these units
 
 energy -> kilowatthour\
 power -> Watt\
