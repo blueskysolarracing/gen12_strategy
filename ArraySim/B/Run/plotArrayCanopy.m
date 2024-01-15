@@ -1,12 +1,19 @@
-function plotArrayCanopy(canopy,arrayCells, highlightCells)
+function plotArrayCanopy(canopy,arrayCells, highlightCells, uiAxes)
     % Plots the array and canopy given the triangles of the array cells and the mesh of the canopy
     % @param canopy: canopy points as an n x 3 matrix
     % @param arrayCells: Cell array of n x 3 matrices that describe points of each cell with ordering
     % @param highlightCells: array of cell numbers to highlight
+    % @param uiAxes: The set of figure axes to plot on
 
     % Plot the canopy
-    scatter3(canopy(:, 1), canopy(:, 2), canopy(:, 3), 50, 'filled', 'MarkerFaceColor', 'b');
-    hold on;
+    if (uiAxes ~= 0)
+        scatter3(uiAxes, canopy(:, 1), canopy(:, 2), canopy(:, 3), 50, 'filled', 'MarkerFaceColor', 'b');
+        hold(uiAxes,"on");
+    else
+        scatter3(canopy(:, 1), canopy(:, 2), canopy(:, 3), 50, 'filled', 'MarkerFaceColor', 'b');
+        hold on;
+    end
+
     xlabel('X-axis');
     ylabel('Y-axis');
     zlabel('Z-axis');
@@ -29,8 +36,12 @@ function plotArrayCanopy(canopy,arrayCells, highlightCells)
             x = cellTriangles(j:j+2,1);
             y = cellTriangles(j:j+2,2);
             z = cellTriangles(j:j+2,3);
-    
-            fill3(x, y, z, colour);
+            
+            if (uiAxes ~= 0) 
+                fill3(uiAxes, x, y, z, colour);
+            else
+                fill3(x, y, z, colour);
+            end
         end
     end
     
