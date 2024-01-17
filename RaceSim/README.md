@@ -12,7 +12,8 @@ From Gen12_Strategy/RaceSim/
 # To Use
 As of January 12th, 2024, this framework can only assess the viability of a speed profile given the gen 11.5 car model and the necessary LUTs. The following ```main.cpp``` demonstrates the method by which to do this:
 
-```int main(int argc, char* argv[]) {
+```
+int main(int argc, char* argv[]) {
     if (argc < 2) {
         std::cout << "Please provide a config file." << std::endl;
         return 0;
@@ -34,7 +35,8 @@ As of January 12th, 2024, this framework can only assess the viability of a spee
     optimizer(sim, route);
 
     return 0;
-}```
+}
+```
 
 # Scientific Units used 
 All units are listed below. Any others not mentioned are also in the base metric system. The configuration file specifies units and is ultimately converted to these units
