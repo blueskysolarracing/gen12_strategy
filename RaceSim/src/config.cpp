@@ -14,17 +14,16 @@ Config* Config::instance_ptr = nullptr;
 Config* Config::get_instance() {
     if (instance_ptr == NULL) {
         instance_ptr = new Config(CONFIG_FILE_PATH);
-        return instance_ptr;
-    } else {
-        return instance_ptr;
-    }
+    } 
+    return instance_ptr;
+
 }
 
 Config::Config(std::string config_file_path) {
 	pugi::xml_document doc;
 	pugi::xml_parse_result parsed_config = doc.load_file((const char*) config_file_path.c_str());
     size_t ind = config_file_path.find("/config");
-    std::string luts = config_file_path.substr(0, ind) + "/luts";
+    std::string luts = config_file_path.substr(0, ind) + "/luts/";
 
 	if (!parsed_config) {
 		std::cout << "Config File could not be loaded" << std::endl;
@@ -34,19 +33,19 @@ Config::Config(std::string config_file_path) {
 
 	control_stop_indices = create_control_stops_set(struct_node.child("Route").child("ControlStops").text().get());
 	luts_base_dir = luts + struct_node.child("Route").child("RouteType").text().get();
-	base_route_path = struct_node.child("LutPaths").child("BaseRoute").text().get();
-	speed_limit_path = struct_node.child("LutPaths").child("SpeedLimits").text().get();
-	traffic_signal_path = struct_node.child("LutPaths").child("TrafficSignals").text().get();
-	dni_path = struct_node.child("LutPaths").child("dni").text().get();
-	dhi_path = struct_node.child("LutPaths").child("dhi").text().get();
-	wind_dir_path = struct_node.child("LutPaths").child("WindDirection").text().get();
-    wind_speed_path = struct_node.child("LutPaths").child("WindSpeed").text().get();
-	power_factor_path = struct_node.child("LutPaths").child("PowerFactor").text().get();
-	roll_res_slope_path = struct_node.child("LutPaths").child("rr2").text().get();
-	roll_res_yint_path = struct_node.child("LutPaths").child("rr1").text().get();
-	drive_eff_path = struct_node.child("LutPaths").child("DrivingEfficiency").text().get();
-	regen_eff_path = struct_node.child("LutPaths").child("RegenEfficiency").text().get();
-	battery_eff_path = struct_node.child("LutPaths").child("BatteryEfficiency").text().get();
+	base_route_path = luts_base_dir + struct_node.child("LutPaths").child("BaseRoute").text().get();
+	speed_limit_path = luts_base_dir + struct_node.child("LutPaths").child("SpeedLimits").text().get();
+	traffic_signal_path = luts_base_dir + struct_node.child("LutPaths").child("TrafficSignals").text().get();
+	dni_path = luts_base_dir + struct_node.child("LutPaths").child("dni").text().get();
+	dhi_path = luts_base_dir + struct_node.child("LutPaths").child("dhi").text().get();
+	wind_dir_path = luts_base_dir + struct_node.child("LutPaths").child("WindDirection").text().get();
+    wind_speed_path = luts_base_dir + struct_node.child("LutPaths").child("WindSpeed").text().get();
+	power_factor_path = luts_base_dir + struct_node.child("LutPaths").child("PowerFactor").text().get();
+	roll_res_slope_path = luts_base_dir + struct_node.child("LutPaths").child("rr2").text().get();
+	roll_res_yint_path = luts_base_dir + struct_node.child("LutPaths").child("rr1").text().get();
+	drive_eff_path = luts_base_dir + struct_node.child("LutPaths").child("DrivingEfficiency").text().get();
+	regen_eff_path = luts_base_dir + struct_node.child("LutPaths").child("RegenEfficiency").text().get();
+	battery_eff_path = luts_base_dir + struct_node.child("LutPaths").child("BatteryEfficiency").text().get();
     control_stop_charge_time = std::stoi(struct_node.child("Route").child("ControlStopChargeTime").text().get()) / 60.0; 
     utc_adjustment = std::stod(struct_node.child("Telemetry").child("UTCAdjustment").text().get());
     double current_soc_percentage = std::stod(struct_node.child("Telemetry").child("CurrentSOC").text().get());
@@ -81,4 +80,7 @@ Config::Config(std::string config_file_path) {
     num_loops = std::stoi(struct_node.child("Strategy").child("NumLoops").text().get());
     array_power_max = std::stod(struct_node.child("Strategy").child("ArrayPowerMax").text().get());
     sim_type = std::stoi(struct_node.child("Strategy").child("SimulationType").text().get());
+	car_type = std::stoi(struct_node.child("Car").child("Model").text().get());
+
+	std::cout << "---------------------Loaded Config File----------------------" << std::endl;
 }

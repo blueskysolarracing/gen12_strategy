@@ -28,9 +28,12 @@ private:
    Time curr_time;
    double battery_energy;
 
+   /* Route to simulate on and the model to use */
+   Car* car;
+
 public:
    /* Loads all LUTs upon construction */
-   Sim();
+   Sim(Car* model);
 
    /* Run a full simulation with a car object and a route. Return true if viable 
       @param route: The Route to simulate on
@@ -39,7 +42,7 @@ public:
       
       TODO: Add parameters for current time, maximum soc bound and minimum soc bound as a percentage
    */
-   bool run_sim(Route route, Base_Car* car, std::vector<uint32_t> speed_profile);
+   bool run_sim(Route route, std::vector<uint32_t> speed_profile);
 };
 
 #endif 

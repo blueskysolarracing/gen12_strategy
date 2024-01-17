@@ -12,4 +12,10 @@
 /* The path to the configuration file */
 extern std::string CONFIG_FILE_PATH;
 
+/* Car Model to integer mappings */
+enum cars
+{   
+    V1_CAR = 0,
+};
+
 #endif

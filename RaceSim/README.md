@@ -10,7 +10,31 @@ From Gen12_Strategy/RaceSim/
 5. ./racesim.exe
 
 # To Use
-As of January 12th, 2024, this framework can only assess the viability of a speed profile given the gen 11.5 car model and the necessary LUTs. The following ```main.cpp``` demonstrates the method by which to do this
+As of January 12th, 2024, this framework can only assess the viability of a speed profile given the gen 11.5 car model and the necessary LUTs. The following ```main.cpp``` demonstrates the method by which to do this:
+
+```int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cout << "Please provide a config file." << std::endl;
+        return 0;
+    }
+
+    /* Load the global configuration file */
+    CONFIG_FILE_PATH = argv[1];
+
+    /* Create a model of the car */
+    Car* car = Car_Factory::get_car(Config::get_instance()->get_car_type());
+    
+    /* Create route */
+    Route route = Route();
+
+    /* Create simulator */
+    Sim sim = Sim(car);
+
+    /* Run the optimizer */
+    optimizer(sim, route);
+
+    return 0;
+}```
 
 # Scientific Units used 
 All units are listed below. Any others not mentioned are also in the base metric system. The configuration file specifies units and is ultimately converted to these units

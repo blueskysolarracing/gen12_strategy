@@ -112,3 +112,4 @@ double V1_Car::compute_static_energy(Coord coord, Time time, double charge_time,
     return delta_battery;
 }
 
+V1_Car::V1_Car() : Car() {}

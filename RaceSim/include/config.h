@@ -8,6 +8,7 @@
 #include <units.h>
 #include <Luts.h>
 #include <set>
+#include <Globals.h>
 
 class Config {
 private:
@@ -27,6 +28,7 @@ private:
 	std::string drive_eff_path;
 	std::string regen_eff_path;
 	std::string battery_eff_path;
+	int car_type;
 
 	Coord gps_coordinates;
 	Time current_date_time;
@@ -113,6 +115,7 @@ public:
 	inline int get_max_speed() {return max_speed;}
 	inline int get_num_loops() {return num_loops;}
 	inline double get_array_power_max() {return array_power_max;}
+	inline int get_car_type() {return car_type;}
 
 	/* No setters since these parameters should never change after initialization */
 };

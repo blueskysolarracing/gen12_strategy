@@ -33,7 +33,7 @@ protected:
 
 public:
     /* Initialize the vector of route points */
-    Route(std::string route_path);
+    Route();
 
     /* Segment the route into uniform lengths */
     void segment_route_uniform(double length);

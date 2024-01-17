@@ -4,9 +4,10 @@
 #include <units.h>
 #include <unordered_set>
 #include <string.h>
+#include <route.h>
 #include <config.h>
 
-bool Sim::run_sim(Route route, Base_Car* car, std::vector<uint32_t> speed_profile) {
+bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile) {
     assert(speed_profile.size() == route.get_num_segments());
 
     uint32_t num_points = route.get_num_points();
@@ -70,13 +71,13 @@ bool Sim::run_sim(Route route, Base_Car* car, std::vector<uint32_t> speed_profil
     return true;
 }
 
-Sim::Sim() {
-    Config* params = Config::get_instance();
-
-    wind_speed_lut = Forecast_Lut(params->get_wind_speed_path());
-    wind_dir_lut = Forecast_Lut(params->get_wind_dir_path());
-    dni_lut = Forecast_Lut(params->get_dni_path());
-    dhi_lut = Forecast_Lut(params->get_dhi_path());
-    battery_energy = params->get_max_soc();
-    control_stop_charge_time = params->get_control_stop_charge_time();
+Sim::Sim(Car* model) : 
+    car(model),
+    wind_speed_lut(Forecast_Lut(Config::get_instance()->get_wind_speed_path())),
+    wind_dir_lut(Forecast_Lut(Config::get_instance()->get_wind_dir_path())),
+    dni_lut(Forecast_Lut(Config::get_instance()->get_dni_path())),
+    dhi_lut(Forecast_Lut(Config::get_instance()->get_dhi_path())),
+    battery_energy(Config::get_instance()->get_max_soc()),
+    control_stop_charge_time(Config::get_instance()->get_control_stop_charge_time())
+    {
 }

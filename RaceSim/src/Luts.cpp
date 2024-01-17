@@ -54,7 +54,7 @@ Eff_Lut::Eff_Lut(std::string lut_path) {
 }
 
 Eff_Lut::Eff_Lut() {
-	std::cout << "Please provide a the path to the LUT." << std::endl;
+	std::cout << "Please provide a file path." << std::endl;
 	return;
 }
 
@@ -87,6 +87,8 @@ Forecast_Lut::Forecast_Lut(std::string lut_path) {
 	std::string time;
 	std::getline(times_stream, time, ',');
 	std::getline(times_stream, time, ',');
+
+	std::cout << "Loading: " << lut_path << std::endl;
 
 	/* Create an array of the time keys */
 	while (!times_stream.eof()) {
@@ -127,12 +129,16 @@ Forecast_Lut::Forecast_Lut(std::string lut_path) {
 
 		forecast_coords.emplace_back(coord);
 
+		std::getline(file_linestream, cell, ',');
+		assert(isDouble(cell) && "Value is not a number");
+		double value = std::stod(cell);
+		forecast_values.emplace_back(value);
+
 		int column_counter = 0;
 		while (!file_linestream.eof()){
-
 			std::getline(file_linestream, cell, ',');
 			assert(isDouble(cell) && "Value is not a number.");
-			forecast_values[row_counter][column_counter] = std::stod(cell);
+			forecast_values[row_counter].push_back(std::stod(cell));
 			column_counter++;
 		}
 
@@ -144,6 +150,8 @@ Forecast_Lut::Forecast_Lut(std::string lut_path) {
 
 	row_cache = 0;
 	column_cache = 0;
+
+	std::cout << "Loaded: " << lut_path << std::endl;
 }
 
 Forecast_Lut::Forecast_Lut() {

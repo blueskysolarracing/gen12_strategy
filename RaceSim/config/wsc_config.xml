@@ -21,6 +21,8 @@
         <cda>0.16</cda>
         <!--kwh-->
         <MaxMotorPower>3.5</MaxMotorPower>
+        <!--The specific model of the car to use. Only 0 (gen 11.5) is supported-->
+        <Model>0</Model>
     </Car>
     <LutPaths>
         <BaseRoute>/static/baseroute.csv</BaseRoute>

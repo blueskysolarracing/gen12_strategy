@@ -2,14 +2,14 @@
 Base class for force balance car models
 */
 
-#ifndef BASE_CAR_H
-#define BASE_CAR_H
+#ifndef CAR_H
+#define CAR_H
 
 #include <units.h>
 #include <Luts.h>
 #include <config.h>
 
-class Base_Car {
+class Car {
 protected:
     /* Car parameters */
     double mass;
@@ -30,7 +30,7 @@ protected:
 public:
 
     /* Constructor */
-    Base_Car();
+    Car();
 
     /* Compute the aerodynamic loss */
     virtual Energy_Change compute_aero_loss(double speed, double car_bearing, Wind wind, double delta_time_s) = 0;

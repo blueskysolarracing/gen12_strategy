@@ -8,6 +8,7 @@
 #include <geography.h>
 #include <utilities.h>
 #include <limits>
+#include <config.h>
 
 /* Getters */
 uint32_t Route::get_num_segments() const { return num_segments; }
@@ -25,8 +26,9 @@ void Route::set_control_stops(std::unordered_set<uint32_t> c_stops) {control_sto
 void Route::set_route_points(std::vector<Coord> new_route_points) {route_points = new_route_points;}
 
 /* Load the base route */
-Route::Route(std::string route_path) {
-    std::cout << "Loading base route." << std::endl;
+Route::Route() {
+	Config* params = Config::get_instance();
+	std::string route_path = params->get_base_route_path();
 	std::fstream base_route(route_path);
 	assert(base_route.is_open() && "File not found...");
 	while (!base_route.eof()) {
@@ -53,7 +55,7 @@ Route::Route(std::string route_path) {
 			route_points.emplace_back(coord);
 		}
 	}
-	std::cout << "Loaded base route with " << route_points.size() << " coordinates." << std::endl;
+	std::cout << "------------Loaded base route with " << route_points.size() << " coordinates---------" << std::endl;
 }
 
 /* Segment a route into uniform lengths */

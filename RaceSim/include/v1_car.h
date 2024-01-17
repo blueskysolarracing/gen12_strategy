@@ -2,13 +2,13 @@
 Model of the car implemented for gen 11.5
 */
 
-#ifndef V1_Car
-#define V1_CAR
+#ifndef V1_CAR_H
+#define V1_CAR_H
 
 #include <base_car.h>
 #include <units.h>
 
-class V1_Car : Base_Car {
+class V1_Car : Car {
 private:
     double max_power;
 
@@ -19,6 +19,8 @@ private:
 
 public:
 
+    V1_Car();
+    
     /* Compute the aerodynamic loss */
     Energy_Change compute_aero_loss(double speed, double car_bearing, Wind wind, double delta_time) override;
 
