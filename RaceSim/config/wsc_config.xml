@@ -9,22 +9,27 @@
         <!--meters squared-->
         <ArrayArea>3.98</ArrayArea>
         <ArrayEfficiency>0.252</ArrayEfficiency>
+        <MotorEfficiency>0.9</MotorEfficiency>
+        <RegenEfficiency>0.8</RegenEfficiency>
+        <BatteryEfficiency>0.95</BatteryEfficiency>
         <!--kg-->
         <CarMass>305</CarMass>
         <!--kg/m^3-->
         <AirDensity>1.17</AirDensity>
         <!--watts-->
         <PassiveElectricLoss>20</PassiveElectricLoss>
-        <MotorEfficiency>0.9</MotorEfficiency>
-        <RegenEfficiency>0.8</RegenEfficiency>
-        <BatteryEfficiency>0.95</BatteryEfficiency>
         <cda>0.16</cda>
         <!--kwh-->
         <MaxMotorPower>3.5</MaxMotorPower>
         <!--The specific model of the car to use. Only 0 (gen 11.5) is supported-->
         <Model>0</Model>
+        <!--Maximum speed that the car can achieve in km/h-->
+        <MaxSpeed>120</MaxSpeed>
     </Car>
     <LutPaths>
+        <!--Base directory of all luts from gen12_strategy/RaceSim/luts/-->
+        <BaseDir>wsc_2023</BaseDir>
+        <!--3 Column csv latitude (degrees) | longitude (degrees) | altitude (km)-->
         <BaseRoute>/static/baseroute.csv</BaseRoute>
         <SpeedLimits>/static/longDistanceSpeedlimit.csv</SpeedLimits>
         <TrafficSignals>/static/longDistanceTrafficSignals.csv</TrafficSignals>
@@ -40,7 +45,6 @@
         <BatteryEfficiency>/static/batteff.csv</BatteryEfficiency>
     </LutPaths>
     <Route>
-        <RouteType>wsc_2023</RouteType>
         <!--Coordinate indices in the route csv where control stops occur-->
         <ControlStops>2962,5559,9462,11421,14439,16990,20832,23202,25987</ControlStops>
         <!--How long the car can CHARGE at a control stop in minutes-->
@@ -74,11 +78,10 @@
         <StationarySimulation>False</StationarySimulation>
         <!--Number of times to loop the coordinates in the route csv. Should be 1 for main race-->
         <NumLoops>1</NumLoops>
-        <!--Simulation Types: -->
-        <!--1: Loop through all coordinates in the route csv NumLoops times. The sim is feasible if battery energy > EndingSOC for all time -->
-        <!--2: Output optimal speed that allows you to complete NumLoops of the route csv and end as close to EndSOC. Will try 1-150 kmph -->
-        <!--3: Get motor power only from MinSpeed to MaxSpeed-->
-        <SimulationType>1</SimulationType>
+        <!--The type of optimization to use. For now, only a constant speed algorithm is supported-->
+        <OptimizationType>0</OptimizationType>
+        <!--The number of segments to split the route into. Note that if OptimizationType = 0, this is 1 by force-->
+        <NumSegments>1</NumSegments>
         <!--The maximum power that the array can generate in Watts-->
         <ArrayPowerMax>850</ArrayPowerMax>
         <!--Coefficient applied to scale the array gains -->

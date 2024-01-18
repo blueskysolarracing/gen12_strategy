@@ -32,7 +32,7 @@ Config::Config(std::string config_file_path) {
 	pugi::xml_node struct_node = doc.child("struct");
 
 	control_stop_indices = create_control_stops_set(struct_node.child("Route").child("ControlStops").text().get());
-	luts_base_dir = luts + struct_node.child("Route").child("RouteType").text().get();
+	luts_base_dir = luts + struct_node.child("LutPaths").child("BaseDir").text().get();
 	base_route_path = luts_base_dir + struct_node.child("LutPaths").child("BaseRoute").text().get();
 	speed_limit_path = luts_base_dir + struct_node.child("LutPaths").child("SpeedLimits").text().get();
 	traffic_signal_path = luts_base_dir + struct_node.child("LutPaths").child("TrafficSignals").text().get();
@@ -54,8 +54,8 @@ Config::Config(std::string config_file_path) {
     double ending_soc_percentage = std::stod(struct_node.child("Telemetry").child("EndingSOC").text().get());
     ending_soc = max_soc * (ending_soc_percentage / 100.0);
 
-    current_date_time = create_time(struct_node.child("Telemetry").child("CurrentDateTime").text().get(), utc_adjustment);
-    end_date_time = create_time(struct_node.child("Telemetry").child("EndDateTime").text().get(), utc_adjustment);
+    current_date_time = new Time(create_time(struct_node.child("Telemetry").child("CurrentDateTime").text().get(), utc_adjustment));
+    end_date_time = new Time(create_time(struct_node.child("Telemetry").child("EndDateTime").text().get(), utc_adjustment));
     gps_coordinates = create_coord(struct_node.child("Telemetry").child("GpsCoordinates").text().get());
 
 	tire_pressure = std::stod(struct_node.child("Car").child("TirePressure").text().get());
@@ -79,8 +79,19 @@ Config::Config(std::string config_file_path) {
     stationary_sim = struct_node.child("Strategy").child("StationarySimulation").text().get() == "True" ? true : false;
     num_loops = std::stoi(struct_node.child("Strategy").child("NumLoops").text().get());
     array_power_max = std::stod(struct_node.child("Strategy").child("ArrayPowerMax").text().get());
-    sim_type = std::stoi(struct_node.child("Strategy").child("SimulationType").text().get());
+    optimization_type = std::stoi(struct_node.child("Strategy").child("OptimizationType").text().get());
+	num_segments = std::stoi(struct_node.child("Strategy").child("NumSegments").text().get());
 	car_type = std::stoi(struct_node.child("Car").child("Model").text().get());
 
 	std::cout << "---------------------Loaded Config File----------------------" << std::endl;
+}
+
+Config::~Config() {
+	if (current_date_time != nullptr) {
+		delete current_date_time;
+	}
+
+	if (end_date_time != nullptr) {
+		delete end_date_time;
+	}
 }

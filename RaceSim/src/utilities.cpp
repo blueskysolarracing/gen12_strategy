@@ -29,7 +29,7 @@ std::set<size_t> create_control_stops_set(std::string input) {
     return result_set;
 }
 
-Time create_time(std::string input, double utc_adjustment) {
+tm create_time(std::string input, double utc_adjustment) {
     const int NUM_TIME_ARGS = 6;
     const int YEAR = 0;
     const int MONTH = 1;
@@ -42,7 +42,6 @@ Time create_time(std::string input, double utc_adjustment) {
 
     std::string value;
     std::tm current_time;
-    Time time_rep = Time();
 
     std::vector<int> time_arguments(NUM_TIME_ARGS);
 
@@ -63,10 +62,7 @@ Time create_time(std::string input, double utc_adjustment) {
     current_time.tm_wday = 0; // weekday arbitrarily set to 0
     current_time.tm_yday = 0; 
 
-    const time_t unix_time = mktime(&current_time) + utc_adjustment * 3600; // make the utc adjustment
-    time_rep.update_current_time(current_time, *(localtime(&unix_time)));
-
-    return time_rep;
+    return current_time;
 }
 
 // Create a coordinate struct from a lat, lon, altitude string

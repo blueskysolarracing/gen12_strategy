@@ -25,7 +25,7 @@ private:
    double control_stop_charge_time;
 
    /* Internal running state of the simulation */
-   Time curr_time;
+   Time* curr_time;
    double battery_energy;
 
    /* Route to simulate on and the model to use */

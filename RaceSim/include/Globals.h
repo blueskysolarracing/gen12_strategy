@@ -18,4 +18,10 @@ enum cars
     V1_CAR = 0,
 };
 
+/* Optimizer to integer mappings */
+enum optimizer 
+{
+    V1_OPT = 0,
+};
+
 #endif

@@ -31,10 +31,11 @@ private:
 	int car_type;
 
 	Coord gps_coordinates;
-	Time current_date_time;
-	Time end_date_time;
+	Time* current_date_time;
+	Time* end_date_time;
 	bool stationary_sim;
-	int sim_type;
+	int optimization_type;
+	int num_segments;
     double max_soc;
 	double tire_pressure;
 	double array_area;
@@ -72,6 +73,8 @@ public:
 	/* Public singleton constructor */
 	static Config* get_instance();
 
+	~Config();
+
 	/* Getters */
 	inline std::set<size_t> get_control_stop_indices() {return control_stop_indices;}
 	inline std::string get_base_route_path() {return base_route_path;}
@@ -88,10 +91,11 @@ public:
 	inline std::string get_regen_eff_path() {return regen_eff_path;}
 	inline std::string get_battery_eff_path() {return battery_eff_path;}
 	inline Coord get_gps_coordinates() {return gps_coordinates;}
-	inline Time get_current_date_time() {return current_date_time;}
-	inline Time get_end_date_time() {return end_date_time;}
+	inline Time* get_current_date_time() {return current_date_time;}
+	inline Time* get_end_date_time() {return end_date_time;}
 	inline bool get_stationary_sim() {return stationary_sim;}
-	inline int get_sim_type() {return sim_type;}
+	inline int get_opt_type() {return optimization_type;}
+	inline int get_num_segments() {return num_segments;}
 	inline double get_max_soc() {return max_soc;}
 	inline double get_tire_pressure() {return tire_pressure;}
 	inline double get_array_area() {return array_area;}

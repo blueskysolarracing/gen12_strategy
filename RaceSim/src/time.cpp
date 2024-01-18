@@ -3,17 +3,28 @@
 #include <cstdint>
 #include <cmath>
 #include <ctime>
+#include <chrono>
 
+/* Note that mktime() followed by gmtime() will convert a local time to utc time */
 Time::Time() : m_milliseconds(0) {
+	std::cout << "default time constructor" << std::endl;
 	time_t now = time(0);
-	tm* datetime = gmtime(&now); // convert to utc
+	tm* datetime = gmtime(&now);
 	m_datetime_local = *datetime;
+}
+
+Time::Time(tm local_time_point) {
+	m_datetime_local = local_time_point;
+	time_t local_time_t = mktime(&m_datetime_local);
+	m_datetime_utc = *gmtime(&local_time_t);
 }
 
 void Time::update_time_seconds(double seconds) {
 	double total_seconds = seconds + 1000 * m_milliseconds;
 	m_datetime_local.tm_sec += (int)seconds;
 	m_datetime_utc.tm_sec += (int)seconds;
+
+	/* mktime() automatically fixes the tm structs if they violate any ranges */
 	mktime(&m_datetime_local);
 	mktime(&m_datetime_utc);
 	m_milliseconds = total_seconds - floor(total_seconds);

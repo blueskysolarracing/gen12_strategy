@@ -21,9 +21,6 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile) {
     std::pair<uint32_t, uint32_t> current_segment = segments[segment_counter];
     uint32_t current_speed = speed_profile[segment_counter];
 
-    /* Todo, make this start at some set time and update it during the loop */
-    Time curr_time = Time();
-
     for (size_t idx=0; idx<num_points-1; idx++) {
         Coord coord_one = route_points[idx];
         Coord coord_two = route_points[idx+1];
@@ -31,16 +28,16 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile) {
 
         /* Get forecasting data - wind and irradiance */
         ForecastCoord coord_one_forecast = ForecastCoord(coord_one.lat, coord_one.lon);
-        wind_speed_lut.update_index_cache(coord_one_forecast, curr_time.get_utc_time_point());
+        wind_speed_lut.update_index_cache(coord_one_forecast, curr_time->get_utc_time_point());
         double wind_speed = wind_speed_lut.get_value_with_cache();
 
-        wind_dir_lut.update_index_cache(coord_one_forecast, curr_time.get_utc_time_point());
+        wind_dir_lut.update_index_cache(coord_one_forecast, curr_time->get_utc_time_point());
         double wind_dir = wind_dir_lut.get_value_with_cache();
 
-        dni_lut.update_index_cache(coord_one_forecast, curr_time.get_utc_time_point());
+        dni_lut.update_index_cache(coord_one_forecast, curr_time->get_utc_time_point());
         double dni = dni_lut.get_value_with_cache();
 
-        dhi_lut.update_index_cache(coord_one_forecast, curr_time.get_utc_time_point());
+        dhi_lut.update_index_cache(coord_one_forecast, curr_time->get_utc_time_point());
         double dhi = dhi_lut.get_value_with_cache();
 
         Wind wind = Wind(wind_dir, wind_speed);
@@ -48,7 +45,7 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile) {
 
         /* Control Stop */
         if (control_stops.find(idx) != control_stops.end()) {
-            energy_change += car->compute_static_energy(coord_one, curr_time, control_stop_charge_time, irr);
+            energy_change += car->compute_static_energy(coord_one, *curr_time, control_stop_charge_time, irr);
         }
 
         /* Move from point one to point two */
@@ -58,8 +55,7 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile) {
             current_speed = speed_profile[segment_counter];
         }
 
-        energy_change += car->compute_travel_energy(coord_one, coord_two, current_speed, curr_time, wind, irr);
-
+        energy_change += car->compute_travel_energy(coord_one, coord_two, current_speed, *curr_time, wind, irr);
         battery_energy += energy_change;
 
         /* Penalize a minimum soc bound TODO */
@@ -78,6 +74,7 @@ Sim::Sim(Car* model) :
     dni_lut(Forecast_Lut(Config::get_instance()->get_dni_path())),
     dhi_lut(Forecast_Lut(Config::get_instance()->get_dhi_path())),
     battery_energy(Config::get_instance()->get_max_soc()),
-    control_stop_charge_time(Config::get_instance()->get_control_stop_charge_time())
+    control_stop_charge_time(Config::get_instance()->get_control_stop_charge_time()),
+    curr_time(Config::get_instance()->get_current_date_time())
     {
 }

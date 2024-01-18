@@ -74,20 +74,41 @@ struct Energy_Change {
 	Energy_Change() : power(0), energy(0) {}
 };
 
-/* Wraps the C++ epoch time to represent a timestamp */
+/* Wraps the C++ time data structures to represent a timestamp */
 class Time {
 public:
+	/* Use the current time as the starting point */
     Time();
-    inline int get_hours() { return m_datetime_local.tm_hour; };
-	inline time_t get_utc_time_point() { return mktime(&m_datetime_utc); } // Returns time in unix epoch time
+
+	/* Specify a starting time */
+	Time(tm local_time_point);
+
+	/* Local 24 hour time */
+    inline int get_local_hours() { return m_datetime_local.tm_hour; };
+
+	/* Unix epoch UTC timestamp */
+	inline time_t get_utc_time_point() { return mktime(&m_datetime_utc); }
+
+	/* Formats time according to the string found in forecast csv's */
 	uint64_t get_forecast_csv_time();
+
+	/* Advances the timestamp by a certain amount of seconds */
     void update_time_seconds(double seconds);
-	void update_current_time(tm curr_time_local, tm curr_time_utc) {m_datetime_local = curr_time_local; m_datetime_utc = curr_time_utc;}
+
+	/* Manually update the time structs */
+	void update_current_time(tm curr_time_local, tm curr_time_utc) {m_datetime_local = curr_time_local; m_datetime_utc = curr_time_utc;} 
+
+	/* Print human readable local time */
 	void print_readable_time() {std::cout << m_datetime_local.tm_year + 1900 << "-" << m_datetime_local.tm_mon+1 << "-" << m_datetime_local.tm_mday << "-" << m_datetime_local.tm_hour << "-" << m_datetime_local.tm_min << "-" << m_datetime_local.tm_sec <<std::endl;}
+	
+	/* Get human readable local time */
 	std::string get_readable_time();
 private:
+	/* C++ tm structs for both the local time and utc timepoint */
     tm m_datetime_local;
 	tm m_datetime_utc;
+
+	/* Special field for milliseconds since the tm struct's resolution is up to seconds */
     double m_milliseconds;
 };
 

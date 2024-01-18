@@ -10,6 +10,8 @@
 #include <base_car.h>
 #include <route.h>
 #include <sim.h>
+#include <base_opt.h>
+#include <opt_factory.h>
 
 std::string CONFIG_FILE_PATH;
 
@@ -30,6 +32,11 @@ int main(int argc, char* argv[]) {
 
     /* Create simulator */
     Sim sim = Sim(car);
+
+    /* Create optimizer */
+    Optimizer* opt = Opt_Factory::get_optimizer(Config::get_instance()->get_opt_type(), route, sim);
+    std::vector<uint32_t> result_speed_profile = opt->optimize();
+    std::cout << "Viable Speed Profile: " << result_speed_profile[0] << std::endl;
 
     return 0;
 }

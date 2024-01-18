@@ -4,7 +4,7 @@
 #include <cmath>
 
 SolarAngle get_az_el_from_bearing(double bearing, Coord coord, Time time) {
-    SolarAngle sun;
+    SolarAngle sun = SolarAngle();
     get_az_el(time.get_utc_time_point(), coord.lat, coord.lon, coord.alt, &sun.Az, &sun.El);
     // Get the relative azimuth angle based on bearing from true north.
     sun.Az = sun.Az + 180 - bearing;
@@ -47,7 +47,6 @@ double julian_day(time_t utc_time_point) {
 
     // Extract UTC Time
     struct tm* tm = localtime(&utc_time_point);
-
     double year = tm->tm_year + 1900;
     double month = tm->tm_mon + 1;
     double day = tm->tm_mday;

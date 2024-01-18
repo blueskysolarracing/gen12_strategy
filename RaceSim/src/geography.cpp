@@ -21,17 +21,17 @@ double get_distance(Coord src_coord, Coord dst_coord) {
 	double a =  ( sin(delPhi/2) * sin(delPhi/2) ) + ( cos(phi_1) * cos(phi_2) * sin(delLambda/2) * sin(delLambda/2) );
 	double c = 2 * atan2(sqrt(a), sqrt(1-a));
 
-	// Haversine distance in km
-	double dist_km = (R * c)/1000;
+	// Haversine distance in m
+	double dist_km = (R * c);
 
-	// calculate altitude
+	// calculate altitude difference
 	double alt_1 = src_coord.alt;
 	double alt_2 = dst_coord.alt;
 
 	double alt_difference = abs(alt_1-alt_2);
 
 	// Calculate true distance with haversine
-	double true_distance = sqrt(dist_km * dist_km + alt_difference * alt_difference) * 1000.0;
+	double true_distance = sqrt(dist_km * dist_km + alt_difference * alt_difference);
 	
 	return true_distance;
 }

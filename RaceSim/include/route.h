@@ -31,6 +31,9 @@ protected:
     /* Number of points along the route */
     uint32_t num_points;
 
+    /* Total length of the route */
+    double route_length;
+
 public:
     /* Initialize the vector of route points */
     Route();

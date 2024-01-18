@@ -9,6 +9,7 @@
 #include <utilities.h>
 #include <limits>
 #include <config.h>
+#include <Globals.h>
 
 /* Getters */
 uint32_t Route::get_num_segments() const { return num_segments; }
@@ -31,12 +32,18 @@ Route::Route() {
 	std::string route_path = params->get_base_route_path();
 	std::fstream base_route(route_path);
 	assert(base_route.is_open() && "File not found...");
+	route_length = 0.0;
+	Coord last_coord;
+	
+	bool first_coord = true;
+	int counter=0;
 	while (!base_route.eof()) {
 		std::string line;
 		base_route >> line;
 		std::stringstream linestream(line);
 
 		while (!linestream.eof() && !linestream.str().empty()){
+			counter++;
 			std::string cell;
 			Coord coord{};
 
@@ -53,8 +60,22 @@ Route::Route() {
 			coord.alt = std::stod(cell);
 
 			route_points.emplace_back(coord);
+			
+			if (!first_coord) {
+				route_length = route_length + get_distance(last_coord, coord);
+			} else {
+				first_coord = false;
+			}
+
+			last_coord = coord;
 		}
 	}
+
+	/* Segment the route */
+	if (Config::get_instance()->get_opt_type() == V1_OPT) {
+		segment_route_uniform(route_length);
+	}
+
 	std::cout << "------------Loaded base route with " << route_points.size() << " coordinates---------" << std::endl;
 }
 
@@ -97,6 +118,5 @@ void Route::segment_route_uniform(double length) {
 	}
 	
 	num_segments = segments.size();
-
 	return;
 }
