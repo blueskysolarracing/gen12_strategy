@@ -9,6 +9,8 @@
 #include <geography.h>
 #include <limits>
 #include <utilities.h>
+#include <date.h>
+#include <config.h>
 
 /* Load an efficiency csv lookup table */
 Eff_Lut::Eff_Lut(std::string lut_path) {
@@ -103,11 +105,19 @@ Forecast_Lut::Forecast_Lut(std::string lut_path) {
 		temp_time /= 100;
 		int days = temp_time % 100;
 		temp_time /= 100;
-		int month = (temp_time % 100)-1;
+		int month = (temp_time % 100);
 		temp_time /= 100;
-		int year = temp_time + 100;
-		tm forecast_time = tm({seconds, minutes, hours, days, month, year, 0, 0, -1});
-		forecast_times.push_back(mktime(&forecast_time)); // times in the forecast csv are already in utc time
+		int year = temp_time;
+
+		/* Construct YYYY-MM-DD HH:MM:SS string */
+		std::string forecast_time = "20" + std::to_string(year) + "-" + std::to_string(month) + "-" 
+			+ std::to_string(days) + " " + std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds);
+    	std::istringstream iss(forecast_time);
+   		date::sys_time<std::chrono::seconds> epoch_time;
+    	iss >> date::parse("%F %T", epoch_time);
+		time_t local_time_t = std::chrono::system_clock::to_time_t(epoch_time);
+
+		forecast_times.push_back(local_time_t);
 	}
 
 	int row_counter = 0;

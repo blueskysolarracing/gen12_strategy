@@ -54,8 +54,8 @@ Config::Config(std::string config_file_path) {
     double ending_soc_percentage = std::stod(struct_node.child("Telemetry").child("EndingSOC").text().get());
     ending_soc = max_soc * (ending_soc_percentage / 100.0);
 
-    current_date_time = new Time(create_time(struct_node.child("Telemetry").child("CurrentDateTime").text().get(), utc_adjustment));
-    end_date_time = new Time(create_time(struct_node.child("Telemetry").child("EndDateTime").text().get(), utc_adjustment));
+    current_date_time = new Time(create_time(struct_node.child("Telemetry").child("CurrentDateTime").text().get()), utc_adjustment);
+    end_date_time = new Time(create_time(struct_node.child("Telemetry").child("EndDateTime").text().get()), utc_adjustment);
     gps_coordinates = create_coord(struct_node.child("Telemetry").child("GpsCoordinates").text().get());
 
 	tire_pressure = std::stod(struct_node.child("Car").child("TirePressure").text().get());

@@ -56,6 +56,9 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile) {
         }
 
         energy_change += car->compute_travel_energy(coord_one, coord_two, current_speed, *curr_time, wind, irr);
+
+        /* TODO: Update the time */
+        
         battery_energy += energy_change;
 
         /* Penalize a minimum soc bound TODO */

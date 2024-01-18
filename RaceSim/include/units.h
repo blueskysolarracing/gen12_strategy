@@ -10,6 +10,8 @@ Definitions and functions for scientific units, custom objects, conversion funct
 #include <string>
 #include <ctime>
 #include <iostream>
+#include <chrono>
+#include <date.h>
 
 /* Custom units */
 
@@ -74,20 +76,32 @@ struct Energy_Change {
 	Energy_Change() : power(0), energy(0) {}
 };
 
-/* Wraps the C++ time data structures to represent a timestamp */
+/* Wraps the c++ time data structures 
+   Note: We use the date and chrono libraries in order to make conversions between tm and time_t representations since 
+   mktime in c++ implicitly does a timezone conversion based on the user's machine.
+*/
 class Time {
 public:
 	/* Use the current time as the starting point */
     Time();
 
 	/* Specify a starting time */
-	Time(tm local_time_point);
+	Time(time_t local_time_point, double utc_adjustment);
 
 	/* Local 24 hour time */
     inline int get_local_hours() { return m_datetime_local.tm_hour; };
 
 	/* Unix epoch UTC timestamp */
-	inline time_t get_utc_time_point() { return mktime(&m_datetime_utc); }
+	inline time_t get_utc_time_point() { return t_datetime_utc; }
+
+	/* Unix epoch local timestamp */
+	inline time_t get_local_time_point() { return t_datetime_local; }
+
+	/* tm struct UTC timestamp */
+	inline tm get_utc_tm() { return m_datetime_utc; }
+
+	/* tm struct local timestamp */
+	inline tm get_local_tm() { return m_datetime_local; }
 
 	/* Formats time according to the string found in forecast csv's */
 	uint64_t get_forecast_csv_time();
@@ -99,14 +113,23 @@ public:
 	void update_current_time(tm curr_time_local, tm curr_time_utc) {m_datetime_local = curr_time_local; m_datetime_utc = curr_time_utc;} 
 
 	/* Print human readable local time */
-	void print_readable_time() {std::cout << m_datetime_local.tm_year + 1900 << "-" << m_datetime_local.tm_mon+1 << "-" << m_datetime_local.tm_mday << "-" << m_datetime_local.tm_hour << "-" << m_datetime_local.tm_min << "-" << m_datetime_local.tm_sec <<std::endl;}
+	void print_local_readable_time() {std::cout << get_local_readable_time() << std::endl;}
+
+	/* Print human readable utc time */
+	void print_utc_readable_time() {std::cout << get_utc_readable_time() << std::endl;}
 	
 	/* Get human readable local time */
-	std::string get_readable_time();
+	inline std::string get_local_readable_time() {return asctime(&m_datetime_local);};
+
+	/* Get human readable utc time */
+	inline std::string get_utc_readable_time() {return asctime(&m_datetime_utc);}
 private:
-	/* C++ tm structs for both the local time and utc timepoint */
+	/* C++ tm structs and unix epoch times for both the local time and utc timepoint */
     tm m_datetime_local;
 	tm m_datetime_utc;
+
+	time_t t_datetime_local;
+	time_t t_datetime_utc;
 
 	/* Special field for milliseconds since the tm struct's resolution is up to seconds */
     double m_milliseconds;

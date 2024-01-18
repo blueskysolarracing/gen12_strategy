@@ -15,8 +15,8 @@ bool isDouble(std::string str);
 /* Convert a comma seperated string of numbers into an integer set */
 std::set<size_t> create_control_stops_set(std::string input);
 
-// Create a tm struct from a string in YYYY/MM/DD/HH/MM/SS format
-tm create_time(std::string input, double utc_adjustment);
+// Return a time_t (unix epoch time) from a local time string in YYYY-MM-DD HH:MM:SS format
+time_t create_time(std::string input);
 
 // Create a coordinate struct from a lat, lon, altitude string
 Coord create_coord(std::string input);

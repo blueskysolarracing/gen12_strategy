@@ -62,10 +62,10 @@
         <!--percentage out of 100. Starting SOC of a sim will be calculated as CurrentSoc / 100 * MaxBatteryCharge-->
         <CurrentSOC>100</CurrentSOC>
         <EndingSOC>0</EndingSOC>
-        <!--YYYY/MM/DD/HH/MM/SS local time. Hour MUST be in 24 hour format-->
-        <CurrentDateTime>2023/10/22/08/45/00</CurrentDateTime>
-        <!--YYYY/MM/DD/HH/MM/SS local time. Hour MUST be in 24 hour format. Used for stationary simulation only-->
-        <EndDateTime>2023/09/27/08/00/00</EndDateTime>
+        <!--YYYY-MM-DD HH:MM:SS local time. Hour MUST be in 24 hour format-->
+        <CurrentDateTime>2023-10-22 08:45:00</CurrentDateTime>
+        <!--YYYY-MM-DD HH:MM:SS local time. Hour MUST be in 24 hour format. Used for stationary simulation only-->
+        <EndDateTime>2023-10-22 08:45:00</EndDateTime>
         <!--In hours-->
         <UTCAdjustment>-9.5</UTCAdjustment>
     </Telemetry>
