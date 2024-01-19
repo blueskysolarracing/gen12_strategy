@@ -12,6 +12,41 @@
 #include <date.h>
 #include <config.h>
 
+Lut::Lut(std::string lut_path) {
+	std::fstream lut(lut_path);
+	assert(lut.is_open() && "Unable to open efficiency lut file");
+	std::string line;
+	std::string cell;
+
+	while (!lut.eof()) {
+		std::getline(lut, line);
+		if (line.empty()) continue;
+		std::stringstream linestream(line);
+
+		values.emplace_back(std::vector<double>());
+		while (!linestream.eof()) {
+			std::getline(linestream, cell, ',');
+			assert(isDouble(cell) && "Value is not a number.");
+			double val = std::stod(cell);
+			values.back().emplace_back(val);
+		}
+	}
+
+    num_rows = values.size();
+	assert(num_rows > 0);
+    num_cols = values[0].size();
+}
+
+Lut::Lut() {
+	std::cout << "Please provide a file path." << std::endl;
+	return;
+}
+
+double Lut::get_value(size_t row_idx, size_t col_idx) {
+	assert(row_idx >= 0 && row_idx < num_rows && col_idx >= 0 && col_idx < num_cols);
+	return values[row_idx][col_idx];
+}
+
 /* Load an efficiency csv lookup table */
 Eff_Lut::Eff_Lut(std::string lut_path) {
 	std::fstream lut(lut_path);
@@ -76,6 +111,7 @@ double Eff_Lut::get_value(double row_value, double column_value) {
         }
     }
 
+	assert(row >= 0 && row < num_rows && col >= 0 && col < num_cols);
     return values[row][col];
 }
 
@@ -193,6 +229,7 @@ double Forecast_Lut::get_value(ForecastCoord coord, time_t time) {
 		}
     }
 
+	assert(row_key >= 0 && row_key < num_rows && col_key >= 0 && col_key < num_cols);
     return forecast_values[row_key][col_key];
 }
 

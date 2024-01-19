@@ -1,7 +1,9 @@
-/* Classes for two types of lookup tables:
+/* Classes for three types of lookup tables:
    1. Efficiency lookup table csv object. The table can only have doubles or integers
    at each position. The first row and first column serve as the lookup keys and index the table
    for a certain value
+
+   2, Regular lookup table. Table indexed by a certain row and column number.
 
    3. Weather lookup table. The first two columns represent the latitude and longitude respectively, and the
    first row represents a series of timestamps. Index using a lat/lon key along with a timestep key in order to 
@@ -16,6 +18,24 @@
 #include <units.h>
 #include <stdlib.h>
 #include <string>
+
+/* Represents a standard lookup table */
+class Lut {
+private:
+    /* CSV Stored as a matrix */
+    std::vector<std::vector<double>> values;
+
+    /* Dimensions of the csv */
+    size_t num_rows;
+    size_t num_cols;
+
+public:
+    /* Index the LUT to retrieve a value */
+    double get_value(size_t row_idx, size_t col_idx);
+
+    Lut(std::string lut_path);
+    Lut();
+};
 
 /* Represents an efficiency lookup table */
 class Eff_Lut {
@@ -77,6 +97,9 @@ public:
 
     /* Updates the index_cache struct using new keys */
     void update_index_cache(ForecastCoord coord, time_t time);
+
+    /* Reset the cache variables */
+    inline void reset_caches() { row_cache = 0; column_cache = 0;}
 };
 
 #endif

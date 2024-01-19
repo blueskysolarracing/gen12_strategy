@@ -16,7 +16,7 @@ protected:
     Route route;
 
     /* Output speed profile */
-    std::vector<double> speed_profile;
+    std::vector<double> speed_profile_kph;
 public:
 
     Optimizer(Sim simulator, Route path);

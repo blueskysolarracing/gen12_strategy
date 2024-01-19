@@ -8,6 +8,7 @@
 #define JOULES_TO_KWH (3.6e6)
 #define MPS_TO_KPH (3.6)
 #define GRAVITY_ACCELERATION (9.81)
+const double OVERNIGHT_STEP_SIZE (30.0);
 
 /* The path to the configuration file */
 extern std::string CONFIG_FILE_PATH;

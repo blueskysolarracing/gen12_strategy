@@ -35,8 +35,8 @@ int main(int argc, char* argv[]) {
 
     /* Create optimizer */
     Optimizer* opt = Opt_Factory::get_optimizer(Config::get_instance()->get_opt_type(), route, sim);
-    std::vector<uint32_t> result_speed_profile = opt->optimize();
-    std::cout << "Viable Speed Profile: " << result_speed_profile[0] << std::endl;
+    std::vector<uint32_t> result_speed_profile_km = opt->optimize();
+    std::cout << "Viable Speed Profile: " << result_speed_profile_km[0] << std::endl;
 
     return 0;
 }

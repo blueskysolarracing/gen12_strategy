@@ -15,7 +15,7 @@ protected:
     double mass;
     Eff_Lut yint_rolling_resistance;
     Eff_Lut slope_rolling_resistance;
-    Eff_Lut power_factors;
+    Lut power_factors;
     double cda;
     double motor_efficiency;
     double regen_efficiency;
@@ -48,7 +48,7 @@ public:
     virtual Energy_Change compute_array_gain(double delta_time, double dni, double dhi, double az, double el) = 0;
 
     /* Compute energy change when moving between two points in a straight line */
-    virtual double compute_travel_energy(Coord coord_one, Coord coord_two, uint32_t speed, Time time, Wind wind, Irradiance irr) = 0;
+    virtual double compute_travel_energy(Coord coord_one, Coord coord_two, uint32_t speed, double delta_time, Time time, Wind wind, Irradiance irr) = 0;
 
     /* Compute energy change during a static stop */
     virtual double compute_static_energy(Coord coord, Time time, double charge_time, Irradiance irr) = 0;

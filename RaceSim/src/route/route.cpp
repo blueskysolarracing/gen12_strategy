@@ -76,7 +76,8 @@ Route::Route() {
 		segment_route_uniform(route_length);
 	}
 
-	std::cout << "------------Loaded base route with " << route_points.size() << " coordinates---------" << std::endl;
+	num_points = route_points.size();
+	std::cout << "------------Loaded base route with " << num_points << " coordinates---------" << std::endl;
 }
 
 /* Segment a route into uniform lengths */

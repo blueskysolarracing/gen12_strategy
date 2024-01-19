@@ -43,8 +43,8 @@ private:
 	double car_mass;
 	double air_density;
 	double passive_elec_loss;
-	double day_end;
-	double day_start;
+	int day_end;
+	int day_start;
 	double motor_efficiency;
 	double regen_efficiency; 
 	double battery_efficiency;
@@ -103,8 +103,8 @@ public:
 	inline double get_car_mass() {return car_mass;}
 	inline double get_air_density() {return air_density;}
 	inline double get_passive_elec_loss() {return passive_elec_loss;}
-	inline double get_day_end() {return day_end;}
-	inline double get_day_start() {return day_start;}
+	inline int get_day_end() {return day_end;}
+	inline int get_day_start() {return day_start;}
 	inline double get_motor_efficiency() {return motor_efficiency;}
 	inline double get_regen_efficiency() {return regen_efficiency;}
 	inline double get_battery_efficiency() {return battery_efficiency;}

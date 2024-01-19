@@ -4,7 +4,7 @@
 
 /* Load all LUTs and car parameters */
 Car::Car() : 
-    yint_rolling_resistance(Config::get_instance()->get_roll_res_yint_path()),
+    yint_rolling_resistance((Config::get_instance()->get_roll_res_yint_path())),
     slope_rolling_resistance(Config::get_instance()->get_roll_res_slope_path()),
     power_factors(Config::get_instance()->get_power_factor_path()),
     mass(Config::get_instance()->get_car_mass()),

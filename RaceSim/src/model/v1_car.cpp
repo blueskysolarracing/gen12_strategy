@@ -19,10 +19,10 @@ Energy_Change V1_Car::compute_aero_loss(double speed, double car_bearing, Wind w
 Energy_Change V1_Car::compute_rolling_loss(double speed, double delta_time) {
     double y_int_rr = yint_rolling_resistance.get_value(tire_pressure, speed);
     double slope_rr = slope_rolling_resistance.get_value(tire_pressure, speed);
-    double distance_travelled = delta_time * speed;
 
+    double force_scaling = (y_int_rr + slope_rr * mps2kph(speed));
     double normal_force = mass * GRAVITY_ACCELERATION;
-    double power = normal_force * speed;
+    double power = force_scaling * normal_force * speed;
     double energy = watts2kwh(delta_time, power);
 
     return Energy_Change(power, energy);
@@ -40,7 +40,7 @@ double V1_Car::compute_electric_loss(double delta_time) {
 }
 
 Energy_Change V1_Car::compute_array_gain(double delta_time, double dni, double dhi, double az, double el) {
-    double power_factor = power_factors.get_value(round(az), round(el));
+    double power_factor = power_factors.get_value(round(el), round(az));
     double power = (power_factor * dni) + (dhi * array_efficiency * array_area);
     double energy = watts2kwh(delta_time, power);
 
@@ -57,7 +57,7 @@ double V1_Car::compute_net_battery_change(
 	return delta_battery_energy;
 }
 
-double V1_Car::compute_travel_energy(Coord coord_one, Coord coord_two, uint32_t speed, Time time, Wind wind, Irradiance irr) {
+double V1_Car::compute_travel_energy(Coord coord_one, Coord coord_two, uint32_t speed, double delta_time, Time time, Wind wind, Irradiance irr) {
     /* Get orientation of the car */
     double bearing = get_bearing(coord_one, coord_two);
     SolarAngle az_el = get_az_el_from_bearing(bearing, coord_one, time);
@@ -65,11 +65,9 @@ double V1_Car::compute_travel_energy(Coord coord_one, Coord coord_two, uint32_t 
         az_el.El = 0.0;
     }
 
-    double distance_to_travel = get_distance(coord_one, coord_two);
-    double delta_time = distance_to_travel / speed;
-
     /* Calculate energy losses */
     double electric_loss = compute_electric_loss(delta_time);
+    //std::cout << "Electric Loss: " << electric_loss << std::endl;
     double motor_loss = 0.0;
     Energy_Change aero_loss;
     Energy_Change rolling_loss;
@@ -89,6 +87,10 @@ double V1_Car::compute_travel_energy(Coord coord_one, Coord coord_two, uint32_t 
 	}
 
     Energy_Change array_gain = compute_array_gain(delta_time, irr.dni, irr.dhi, az_el.Az, az_el.El);
+    // std::cout << "Aerodynamic loss: " << aero_loss.energy << std::endl;
+    // std::cout << "Rolling loss: " << rolling_loss.energy << std::endl;
+    // std::cout << "Gravity loss: " << gravity_loss.energy << std::endl;
+    // std::cout << "Array Gain: " << array_gain.energy << std::endl;
     double delta_battery = compute_net_battery_change(array_gain.energy, aero_loss.energy, rolling_loss.energy, gravity_loss.energy, electric_loss, motor_loss);
 
     return delta_battery;
@@ -96,20 +98,18 @@ double V1_Car::compute_travel_energy(Coord coord_one, Coord coord_two, uint32_t 
 
 double V1_Car::compute_static_energy(Coord coord, Time time, double charge_time, Irradiance irr) {
     /* Get orientation of the car */
-    double* Az;
-    double* El;
-    get_az_el(time.get_utc_time_point(), coord.lat, coord.lon, coord.alt, Az, El);
-
-    if (*El < 0) {
-        *El = 0.0;
+    SolarAngle sun = SolarAngle();
+    get_az_el(time.get_utc_time_point(), coord.lat, coord.lon, coord.alt, &sun.Az, &sun.El);
+    if (sun.El < 0) {
+        sun.El = 0.0;
     } 
 
     double electric_loss = compute_electric_loss(charge_time);
-    Energy_Change array_gain = compute_array_gain(charge_time, irr.dni, irr.dhi, *Az, *El);
+    Energy_Change array_gain = compute_array_gain(charge_time, irr.dni, irr.dhi, sun.Az, sun.El);
 
 	double delta_battery = array_gain.energy > electric_loss ? battery_efficiency * (array_gain.energy - electric_loss) : (1 / battery_efficiency) * (array_gain.energy - electric_loss);
 
     return delta_battery;
 }
 
-V1_Car::V1_Car() : Car() {}
+V1_Car::V1_Car() : Car() { max_power = Config::get_instance()->get_max_motor_power();}
