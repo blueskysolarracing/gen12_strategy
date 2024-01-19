@@ -8,6 +8,7 @@
 #define JOULES_TO_KWH (3.6e6)
 #define MPS_TO_KPH (3.6)
 #define GRAVITY_ACCELERATION (9.81)
+#define KM_TO_M (1000.0)
 const double OVERNIGHT_STEP_SIZE (30.0);
 
 /* The path to the configuration file */

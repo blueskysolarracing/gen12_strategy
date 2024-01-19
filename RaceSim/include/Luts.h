@@ -74,7 +74,7 @@ private:
     std::vector<ForecastCoord> forecast_coords;
 
     /* Timesteps used to index the lookup table as unix epoch times */
-    std::vector<uint64_t> forecast_times;
+    std::vector<time_t> forecast_times;
 
     /* Dimensions of the csv */
     size_t num_rows;
@@ -98,8 +98,9 @@ public:
     /* Updates the index_cache struct using new keys */
     void update_index_cache(ForecastCoord coord, time_t time);
 
-    /* Reset the cache variables */
-    inline void reset_caches() { row_cache = 0; column_cache = 0;}
+    /* Initialize the cache variables */
+    void initialize_caches(ForecastCoord coord, time_t time);
+    void initialize_caches(Coord coord, time_t time);
 };
 
 #endif

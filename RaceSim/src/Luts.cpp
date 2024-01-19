@@ -64,7 +64,7 @@ Eff_Lut::Eff_Lut(std::string lut_path) {
 		std::getline(linestream, cell, ',');
 		assert(isDouble(cell) && "Value is not a number.");
 		double column_val = std::stod(cell);
-		column_values.emplace_back(column_val);
+		column_values.push_back(column_val);
 	}
 
 	while (!lut.eof()) {
@@ -75,7 +75,7 @@ Eff_Lut::Eff_Lut(std::string lut_path) {
 		std::getline(linestream, cell, ',');
 		assert(isDouble(cell) && "Value is not a number.");
 		double row_val = std::stod(cell);
-		row_values.emplace_back(row_val);
+		row_values.push_back(row_val);
 
 		values.emplace_back(std::vector<double>());
 		while (!linestream.eof()) {
@@ -86,8 +86,8 @@ Eff_Lut::Eff_Lut(std::string lut_path) {
 		}
 	}
 
-    num_rows = column_values.size();
-    num_cols = row_values.size();
+    num_cols = column_values.size();
+    num_rows = row_values.size();
 }
 
 Eff_Lut::Eff_Lut() {
@@ -100,13 +100,13 @@ double Eff_Lut::get_value(double row_value, double column_value) {
     size_t col = 0;
 
     for (; row < num_rows; row++) {
-        if (row_value == row_values[row] || row_value > row_values[row]) {
+        if (row_value == row_values[row] || row_values[row] > row_value) {
             break;
         }
     }
 
     for (; col < num_cols; col++) {
-        if (column_value == column_values[col] || column_value > column_values[col]) {
+        if (column_value == column_values[col] || column_values[col] > column_value) {
             break;
         }
     }
@@ -178,7 +178,9 @@ Forecast_Lut::Forecast_Lut(std::string lut_path) {
 		std::getline(file_linestream, cell, ',');
 		assert(isDouble(cell) && "Value is not a number");
 		double value = std::stod(cell);
-		forecast_values.emplace_back(value);
+		std::vector<double> inner_vector;
+		inner_vector.emplace_back(value);
+		forecast_values.push_back(inner_vector);
 
 		int column_counter = 0;
 		while (!file_linestream.eof()){
@@ -231,6 +233,57 @@ double Forecast_Lut::get_value(ForecastCoord coord, time_t time) {
 
 	assert(row_key >= 0 && row_key < num_rows && col_key >= 0 && col_key < num_cols);
     return forecast_values[row_key][col_key];
+}
+
+void Forecast_Lut::initialize_caches(ForecastCoord coord, time_t time) {
+
+	/* Initialize row cache */
+	Coord forecast_coord_as_coord = Coord(coord);
+	double min_distance = std::numeric_limits<double>::max();
+	for (size_t i = 0; i < num_rows; i++) {
+		Coord forecast_coord = Coord(forecast_coords[i]);
+		double distance = get_distance(forecast_coord, forecast_coord_as_coord);
+		if (distance < min_distance) {
+			min_distance = distance;
+			row_cache = i;
+		}
+	} 
+
+	/* Initialize column cache */
+	double min_time = std::numeric_limits<double>::max();
+	for (size_t i=0; i<num_cols; i++) {
+		time_t forecast_time = forecast_times[i];
+		int time_diff = time - forecast_time;
+		if (std::abs((double) time_diff) < min_time) {
+			min_time = std::abs((double) time_diff);
+			column_cache = i;
+		}
+	}
+}
+
+void Forecast_Lut::initialize_caches(Coord coord, time_t time) {
+
+	/* Initialize row cache */
+	double min_distance = std::numeric_limits<double>::max();
+	for (size_t i = 0; i < num_rows; i++) {
+		Coord forecast_coord = Coord(forecast_coords[i]);
+		double distance = get_distance(forecast_coord, coord);
+		if (distance < min_distance) {
+			min_distance = distance;
+			row_cache = i;
+		}
+	} 
+
+	/* Initialize column cache */
+	double min_time = std::numeric_limits<double>::max();
+	for (size_t i=0; i<num_cols; i++) {
+		time_t forecast_time = forecast_times[i];
+		int time_diff = time - forecast_time;
+		if (std::abs((double) time_diff) < min_time) {
+			min_time = std::abs((double) time_diff);
+			column_cache = i;
+		}
+	}
 }
 
 /* Begins searching from the specified indices */

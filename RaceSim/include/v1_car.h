@@ -37,7 +37,7 @@ public:
     Energy_Change compute_array_gain(double delta_time, double dni, double dhi, double az, double el) override;
 
     /* Compute energy change when moving between two points in a straight line */
-    double compute_travel_energy(Coord coord_one, Coord coord_two, uint32_t speed, double delta_time, Time time, Wind wind, Irradiance irr) override;
+    double compute_travel_energy(Coord coord_one, Coord coord_two, double speed, double delta_time, Time time, Wind wind, Irradiance irr) override;
 
     /* Compute energy change during a static stop */
     double compute_static_energy(Coord coord, Time time, double charge_time, Irradiance irr) override;

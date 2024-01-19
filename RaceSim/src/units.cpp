@@ -5,8 +5,10 @@
 
 SolarAngle get_az_el_from_bearing(double bearing, Coord coord, Time time) {
     SolarAngle sun = SolarAngle();
-    get_az_el(time.get_utc_time_point(), coord.lat, coord.lon, coord.alt, &sun.Az, &sun.El);
-    // Get the relative azimuth angle based on bearing from true north.
+    get_az_el(time.get_utc_time_point(), coord.lat, coord.lon, meters2km(coord.alt), &sun.Az, &sun.El);
+    // Get the relative azimuth angle based on bearing from true north. 
+    // e.g. if the car was pointing south (180 degree bearing) and the azimuth of the sun was 90 degrees (east)
+    // then the relative azimuth is 270 degrees
     sun.Az = sun.Az + 180 - bearing;
     if (sun.Az < 0) {
         sun.Az = 360 + sun.Az;
@@ -176,83 +178,83 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
 void get_az_el(time_t utc_time_point, double Lat, double Lon, double Alt, double* Az, double* El) {
-    double jd = julian_day(utc_time_point);
+	double jd = julian_day(utc_time_point);
 
-    double d = jd - 2451543.5;
-    
-    // Keplerian Elements for the Sun(geocentric)
-    double w = 282.9404 + 4.70935e-5*d; // (longitude of perihelion degrees)
-    // a = 1.000000; % (mean distance, a.u.)
-    double e = 0.016709 - 1.151e-9*d; // (eccentricity)
-    double M = fmod(356.0470 + 0.9856002585*d, 360.0); // (mean anomaly degrees)
-        
-    double L = w + M; // (Sun's mean longitude degrees)
+	double d = jd - 2451543.5;
+	
+	// Keplerian Elements for the Sun(geocentric)
+	double w = 282.9404 + 4.70935e-5*d; // (longitude of perihelion degrees)
+	// a = 1.000000; % (mean distance, a.u.)
+	double e = 0.016709 - 1.151e-9*d; // (eccentricity)
+	double M = fmod(356.0470 + 0.9856002585*d, 360.0); // (mean anomaly degrees)
+		
+	double L = w + M; // (Sun's mean longitude degrees)
 
-    double oblecl = 23.4393 - 3.563e-7*d; // (Sun's obliquity of the ecliptic)
+	double oblecl = 23.4393 - 3.563e-7*d; // (Sun's obliquity of the ecliptic)
 
-    // auxiliary angle
-    double  E = M + (180 / M_PI)*e*sin(M*(M_PI / 180))*(1 + e*cos(M*(M_PI / 180)));
+	// auxiliary angle
+	double  E = M + (180 / M_PI)*e*sin(M*(M_PI / 180))*(1 + e*cos(M*(M_PI / 180)));
 
-    // rectangular coordinates in the plane of the ecliptic(x axis toward perhilion)
-    double x = cos(E*(M_PI / 180)) - e;
-    double y = sin(E*(M_PI / 180))*sqrt(1 - pow(e, 2));
+	// rectangular coordinates in the plane of the ecliptic(x axis toward perhilion)
+	double x = cos(E*(M_PI / 180)) - e;
+	double y = sin(E*(M_PI / 180))*sqrt(1 - pow(e, 2));
 
-    // find the distance and true anomaly
-    double r = sqrt(pow(x,2) + pow(y,2));
-    double v = atan2(y, x)*(180 / M_PI);
+	// find the distance and true anomaly
+	double r = sqrt(pow(x,2) + pow(y,2));
+	double v = atan2(y, x)*(180 / M_PI);
 
-    // find the longitude of the sun
-    double lon = v + w;
+	// find the longitude of the sun
+	double lon = v + w;
 
-    // compute the ecliptic rectangular coordinates
-    double xeclip = r*cos(lon*(M_PI / 180));
-    double yeclip = r*sin(lon*(M_PI / 180));
-    double zeclip = 0.0;
-    //rotate these coordinates to equitorial rectangular coordinates
-    double xequat = xeclip;
+	// compute the ecliptic rectangular coordinates
+	double xeclip = r*cos(lon*(M_PI / 180));
+	double yeclip = r*sin(lon*(M_PI / 180));
+	double zeclip = 0.0;
+	//rotate these coordinates to equitorial rectangular coordinates
+	double xequat = xeclip;
 
-    double yequat = yeclip*cos(oblecl*(M_PI / 180)) + zeclip * sin(oblecl*(M_PI / 180));
+	double yequat = yeclip*cos(oblecl*(M_PI / 180)) + zeclip * sin(oblecl*(M_PI / 180));
 
-    double zequat = yeclip*sin(23.4406*(M_PI / 180)) + zeclip * cos(oblecl*(M_PI / 180));
-    // convert equatorial rectangular coordinates to RA and Decl:
-    r = sqrt(pow(xequat, 2) + pow(yequat, 2) + pow(zequat, 2)) - (Alt / 149598000); //roll up the altitude correction
-    double RA = atan2(yequat, xequat)*(180 / M_PI);
+	double zequat = yeclip*sin(23.4406*(M_PI / 180)) + zeclip * cos(oblecl*(M_PI / 180));
+	// convert equatorial rectangular coordinates to RA and Decl:
+	r = sqrt(pow(xequat, 2) + pow(yequat, 2) + pow(zequat, 2)) - (Alt / 149598000); //roll up the altitude correction
+	double RA = atan2(yequat, xequat)*(180 / M_PI);
 
-    double delta = asin(zequat / r)*(180 / M_PI);
-    
-    // Following the RA DEC to Az Alt conversion sequence explained here :
-    // http ://www.stargazing.net/kepler/altaz.html
-    //	Find the J2000 value
-    //	J2000 = jd - 2451545.0;
-    //hourvec = datevec(UTC);
-    //UTH = hourvec(:, 4) + hourvec(:, 5) / 60 + hourvec(:, 6) / 3600;
+	double delta = asin(zequat / r)*(180 / M_PI);
+	
+	// Following the RA DEC to Az Alt conversion sequence explained here :
+	// http ://www.stargazing.net/kepler/altaz.html
+	//	Find the J2000 value
+	//	J2000 = jd - 2451545.0;
+	//hourvec = datevec(UTC);
+	//UTH = hourvec(:, 4) + hourvec(:, 5) / 60 + hourvec(:, 6) / 3600;
 
-    // Get UTC representation of time / C++ Specific
-    tm *ptm;
-    ptm = localtime(&utc_time_point);
-    double UTH = (double)ptm->tm_hour + (double)ptm->tm_min / 60 + (double)ptm->tm_sec / 3600;
+	// Get UTC representation of time / C++ Specific
+	tm *ptm;
+	ptm = gmtime(&utc_time_point);
+	double UTH = (double)ptm->tm_hour + (double)ptm->tm_min / 60 + (double)ptm->tm_sec / 3600;
 
-    // Calculate local siderial time
-    double GMST0 = fmod(L + 180, 360.0) / 15;
+	// Calculate local siderial time
+	double GMST0 = fmod(L + 180, 360.0) / 15;
 
-    double SIDTIME = GMST0 + UTH + Lon / 15;
-    
-    // Replace RA with hour angle HA
-    double HA = (SIDTIME*15 - RA);
+	double SIDTIME = GMST0 + UTH + Lon / 15;
+	
+	// Replace RA with hour angle HA
+	double HA = (SIDTIME*15 - RA);
 
-    // convert to rectangular coordinate system
-    x = cos(HA*(M_PI / 180))*cos(delta*(M_PI / 180));
+	// convert to rectangular coordinate system
+	x = cos(HA*(M_PI / 180))*cos(delta*(M_PI / 180));
 
-    y = sin(HA*(M_PI / 180))*cos(delta*(M_PI / 180));
-    double z = sin(delta*(M_PI / 180));
+	y = sin(HA*(M_PI / 180))*cos(delta*(M_PI / 180));
+	double z = sin(delta*(M_PI / 180));
 
-    // rotate this along an axis going east - west.
-    double xhor = x*cos((90 - Lat)*(M_PI / 180)) - z*sin((90 - Lat)*(M_PI / 180));
+	// rotate this along an axis going east - west.
+	double xhor = x*cos((90 - Lat)*(M_PI / 180)) - z*sin((90 - Lat)*(M_PI / 180));
 
-    double yhor = y;
-    double zhor = x*sin((90 - Lat)*(M_PI / 180)) + z*cos((90 - Lat)*(M_PI / 180));
-    
-    // Find the h and AZ
-    *Az = atan2(yhor, xhor)*(180 / M_PI) + 180;
-    *El = asin(zhor)*(180 / M_PI);
+	double yhor = y;
+	double zhor = x*sin((90 - Lat)*(M_PI / 180)) + z*cos((90 - Lat)*(M_PI / 180));
+	
+	// Find the h and AZ
+	*Az = atan2(yhor, xhor)*(180 / M_PI) + 180;
+	*El = asin(zhor)*(180 / M_PI);
 }

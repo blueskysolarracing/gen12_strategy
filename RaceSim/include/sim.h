@@ -25,9 +25,10 @@ private:
    double control_stop_charge_time;
    int race_start; /* Start time of race in 24 hour */
    int race_end;   /* End time of race in 24 hour */
+   Coord starting_coord;
 
    /* Internal running state of the simulation */
-   Time* curr_time;
+   Time curr_time;
    double battery_energy;
    double total_distance;
 

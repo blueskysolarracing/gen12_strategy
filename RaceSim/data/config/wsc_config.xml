@@ -18,7 +18,7 @@
         <AirDensity>1.17</AirDensity>
         <!--watts-->
         <PassiveElectricLoss>20</PassiveElectricLoss>
-        <cda>0.067</cda>
+        <cda>0.16</cda>
         <!--kwh-->
         <MaxMotorPower>3.5</MaxMotorPower>
         <!--The specific model of the car to use. Only 0 (gen 11.5) is supported-->
@@ -63,7 +63,7 @@
         <CurrentSOC>100</CurrentSOC>
         <EndingSOC>0</EndingSOC>
         <!--YYYY-MM-DD HH:MM:SS local time. Hour MUST be in 24 hour format-->
-        <CurrentDateTime>2023-10-22 07:00:00</CurrentDateTime>
+        <CurrentDateTime>2023-10-22 08:00:00</CurrentDateTime>
         <!--YYYY-MM-DD HH:MM:SS local time. Hour MUST be in 24 hour format. Used for stationary simulation only-->
         <EndDateTime>2023-10-22 08:45:00</EndDateTime>
         <!--In hours-->

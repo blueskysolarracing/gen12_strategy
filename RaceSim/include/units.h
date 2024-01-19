@@ -15,15 +15,6 @@ Definitions and functions for scientific units, custom objects, conversion funct
 
 /* Custom units */
 
-struct Coord {
-	double lat;
-	double lon;
-	double alt;
-
-	Coord(double latitude, double longitude, double altitude) : lat(latitude), lon(longitude), alt(altitude) {}
-	Coord() : lat(0), lon(0), alt(0) {}
-};
-
 /* A forecast coordinate is represented only by latitude and longitude */
 struct ForecastCoord {
 	double lat;
@@ -31,6 +22,18 @@ struct ForecastCoord {
 
 	ForecastCoord(double latitude, double longitude) : lat(latitude), lon(longitude) {}
 	ForecastCoord() : lat(0), lon(0) {}
+};
+
+struct Coord {
+	double lat;
+	double lon;
+	double alt;
+
+	Coord(double latitude, double longitude, double altitude) : lat(latitude), lon(longitude), alt(altitude) {}
+	Coord() : lat(0), lon(0), alt(0) {}
+
+	/* Conversion operator from type ForecastCoord to Coord by clearing the altitude value */
+	Coord(const struct ForecastCoord& fc) : lat(fc.lat), lon(fc.lon), alt(0.0) {}
 };
 
 struct Wind {
@@ -113,7 +116,7 @@ public:
 	void update_current_time(tm curr_time_local, tm curr_time_utc) {m_datetime_local = curr_time_local; m_datetime_utc = curr_time_utc;} 
 
 	/* Print human readable local time */
-	void print_local_readable_time() {std::cout << get_local_readable_time() << std::endl;}
+	void print_local_readable_time() {std::cout << get_local_readable_time();}
 
 	/* Print human readable utc time */
 	void print_utc_readable_time() {std::cout << get_utc_readable_time() << std::endl;}
@@ -144,6 +147,8 @@ inline double kph2mps(double kph) { return kph / MPS_TO_KPH; }
 inline double mps2kph(double mps) { return mps * MPS_TO_KPH; }
 inline double joules2kwh(double joules) { return joules / JOULES_TO_KWH; }
 inline double watts2kwh(double time, double watts) { return watts * (secs2hours(time) / 1000.0);}
+inline double meters2km(double m) {return m/KM_TO_M;}
+inline double km2meters(double km) {return km * KM_TO_M;}
 
 /* Azimuth and elevation of the sun from the car's location, bearing and time of day
    TODO: Need to make sure that this is degrees clockwise from the nose of the car!!!
