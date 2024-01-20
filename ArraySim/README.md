@@ -11,7 +11,7 @@ This array simulation aims to simulate the power output of a solar car array acr
     - Warning: The cells **MUST** be named ```NA(<int>).stl``` for the following visualization to work properly.
 
     - After running the algorithm, you can visualize the irradiance by running the ```visualize_irradiance.mlapp``` MATLAB app. First select the folder containing all the STLs of the array and the canopy. Then, select the csv generated from step 1 describing sun positions and finally, the csv generated from step 2 describing cell irradiances. 
-    ![irr_vis](../images/vis_irr_ex.png)
+    ![irr_vis](../images/vis_irr_ex.PNG)
 
 3. Get the total power output of the entire array in W by feeding the output csv from step 2 into a custom simulink model that simulates either bypass diodes or mppt controllers. This simulink model must be custom made for each array layout in order to adhere to string configurations. If your strings are composed of a series connection of substrings, you can generate it based off a json file by running ```./BypassDiodeSim/generate_bypass_diode_model(<model_name>, <.json layout>)```
 
