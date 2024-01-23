@@ -13,10 +13,10 @@
 double get_distance(Coord src_coord, Coord dst_coord) {
 	constexpr double R = 6371e3; 
 
-	double phi_1 = src_coord.lat * M_PI/180; 
-	double phi_2 = dst_coord.lat * M_PI/180;
-	double delPhi = (dst_coord.lat-src_coord.lat) * M_PI/180;
-	double delLambda = (dst_coord.lon-src_coord.lon) * M_PI/180;
+	double phi_1 = src_coord.lat * PI/180; 
+	double phi_2 = dst_coord.lat * PI/180;
+	double delPhi = (dst_coord.lat-src_coord.lat) * PI/180;
+	double delLambda = (dst_coord.lon-src_coord.lon) * PI/180;
 
 	double a =  ( sin(delPhi/2) * sin(delPhi/2) ) + ( cos(phi_1) * cos(phi_2) * sin(delLambda/2) * sin(delLambda/2) );
 	double c = 2 * atan2(sqrt(a), sqrt(1-a));
@@ -40,10 +40,10 @@ double get_distance(Coord src_coord, Coord dst_coord) {
 double get_forecast_coord_distance(ForecastCoord src_coord, ForecastCoord dst_coord) {
 	constexpr double R = 6371e3; 
 
-	double phi_1 = src_coord.lat * M_PI/180; 
-	double phi_2 = dst_coord.lat * M_PI/180;
-	double delPhi = (dst_coord.lat-src_coord.lat) * M_PI/180;
-	double delLambda = (dst_coord.lon-src_coord.lon) * M_PI/180;
+	double phi_1 = src_coord.lat * PI/180; 
+	double phi_2 = dst_coord.lat * PI/180;
+	double delPhi = (dst_coord.lat-src_coord.lat) * PI/180;
+	double delLambda = (dst_coord.lon-src_coord.lon) * PI/180;
 
 	double a =  ( sin(delPhi/2) * sin(delPhi/2) ) + ( cos(phi_1) * cos(phi_2) * sin(delLambda/2) * sin(delLambda/2) );
 	double c = 2 * atan2(sqrt(a), sqrt(1-a));

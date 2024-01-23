@@ -139,8 +139,8 @@ private:
 };
 
 /* Unit conversions */
-inline double rad2deg(double radians) { return radians * DEGREES_IN_PI / M_PI; }
-inline double deg2rad(double degrees) { return degrees * M_PI / DEGREES_IN_PI; }
+inline double rad2deg(double radians) { return radians * DEGREES_IN_PI / PI; }
+inline double deg2rad(double degrees) { return degrees * PI / DEGREES_IN_PI; }
 inline double hours2secs(double hours) { return hours * HOURS_TO_SECONDS; }
 inline double secs2hours(double seconds) { return seconds / HOURS_TO_SECONDS; }
 inline double kph2mps(double kph) { return kph / MPS_TO_KPH; }

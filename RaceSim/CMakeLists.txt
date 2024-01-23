@@ -1,6 +1,13 @@
 # Minimum version of CMake required
 cmake_minimum_required(VERSION 3.12)
 
+Include(FetchContent)
+FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_TAG v1.13.0
+)
+FetchContent_MakeAvailable(spdlog)
 # Project name
 project(RaceSim VERSION 1.0 LANGUAGES CXX)
 
@@ -13,7 +20,7 @@ message(STATUS "RaceSim src files: ${SOURCES}")
 
 # Add the main executable
 add_executable(RaceSim ${SOURCES})
-target_link_libraries(RaceSim PRIVATE pugixml date)
+target_link_libraries(RaceSim PRIVATE pugixml date spdlog::spdlog)
 
 # Add external libraries
 add_subdirectory(libs/date)
@@ -30,4 +37,5 @@ target_include_directories(RaceSim PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/date
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/pugixml/include
+    spdlog::spdlog
 )

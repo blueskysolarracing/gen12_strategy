@@ -193,34 +193,34 @@ void get_az_el(time_t utc_time_point, double Lat, double Lon, double Alt, double
 	double oblecl = 23.4393 - 3.563e-7*d; // (Sun's obliquity of the ecliptic)
 
 	// auxiliary angle
-	double  E = M + (180 / M_PI)*e*sin(M*(M_PI / 180))*(1 + e*cos(M*(M_PI / 180)));
+	double  E = M + (180 / PI)*e*sin(M*(PI / 180))*(1 + e*cos(M*(PI / 180)));
 
 	// rectangular coordinates in the plane of the ecliptic(x axis toward perhilion)
-	double x = cos(E*(M_PI / 180)) - e;
-	double y = sin(E*(M_PI / 180))*sqrt(1 - pow(e, 2));
+	double x = cos(E*(PI / 180)) - e;
+	double y = sin(E*(PI / 180))*sqrt(1 - pow(e, 2));
 
 	// find the distance and true anomaly
 	double r = sqrt(pow(x,2) + pow(y,2));
-	double v = atan2(y, x)*(180 / M_PI);
+	double v = atan2(y, x)*(180 / PI);
 
 	// find the longitude of the sun
 	double lon = v + w;
 
 	// compute the ecliptic rectangular coordinates
-	double xeclip = r*cos(lon*(M_PI / 180));
-	double yeclip = r*sin(lon*(M_PI / 180));
+	double xeclip = r*cos(lon*(PI / 180));
+	double yeclip = r*sin(lon*(PI / 180));
 	double zeclip = 0.0;
 	//rotate these coordinates to equitorial rectangular coordinates
 	double xequat = xeclip;
 
-	double yequat = yeclip*cos(oblecl*(M_PI / 180)) + zeclip * sin(oblecl*(M_PI / 180));
+	double yequat = yeclip*cos(oblecl*(PI / 180)) + zeclip * sin(oblecl*(PI / 180));
 
-	double zequat = yeclip*sin(23.4406*(M_PI / 180)) + zeclip * cos(oblecl*(M_PI / 180));
+	double zequat = yeclip*sin(23.4406*(PI / 180)) + zeclip * cos(oblecl*(PI / 180));
 	// convert equatorial rectangular coordinates to RA and Decl:
 	r = sqrt(pow(xequat, 2) + pow(yequat, 2) + pow(zequat, 2)) - (Alt / 149598000); //roll up the altitude correction
-	double RA = atan2(yequat, xequat)*(180 / M_PI);
+	double RA = atan2(yequat, xequat)*(180 / PI);
 
-	double delta = asin(zequat / r)*(180 / M_PI);
+	double delta = asin(zequat / r)*(180 / PI);
 	
 	// Following the RA DEC to Az Alt conversion sequence explained here :
 	// http ://www.stargazing.net/kepler/altaz.html
@@ -243,18 +243,18 @@ void get_az_el(time_t utc_time_point, double Lat, double Lon, double Alt, double
 	double HA = (SIDTIME*15 - RA);
 
 	// convert to rectangular coordinate system
-	x = cos(HA*(M_PI / 180))*cos(delta*(M_PI / 180));
+	x = cos(HA*(PI / 180))*cos(delta*(PI / 180));
 
-	y = sin(HA*(M_PI / 180))*cos(delta*(M_PI / 180));
-	double z = sin(delta*(M_PI / 180));
+	y = sin(HA*(PI / 180))*cos(delta*(PI / 180));
+	double z = sin(delta*(PI / 180));
 
 	// rotate this along an axis going east - west.
-	double xhor = x*cos((90 - Lat)*(M_PI / 180)) - z*sin((90 - Lat)*(M_PI / 180));
+	double xhor = x*cos((90 - Lat)*(PI / 180)) - z*sin((90 - Lat)*(PI / 180));
 
 	double yhor = y;
-	double zhor = x*sin((90 - Lat)*(M_PI / 180)) + z*cos((90 - Lat)*(M_PI / 180));
+	double zhor = x*sin((90 - Lat)*(PI / 180)) + z*cos((90 - Lat)*(PI / 180));
 	
 	// Find the h and AZ
-	*Az = atan2(yhor, xhor)*(180 / M_PI) + 180;
-	*El = asin(zhor)*(180 / M_PI);
+	*Az = atan2(yhor, xhor)*(180 / PI) + 180;
+	*El = asin(zhor)*(180 / PI);
 }

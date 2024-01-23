@@ -5,12 +5,12 @@ This framework intends to provide a variety of optimization algorithms and car m
 From Gen12_Strategy/RaceSim/
 1. mkdir build
 2. cd build
-3. cmake .. (cmake .. -G "MinGW Makefiles" if on windows)
+3. cmake .. (cmake .. -G "MinGW Makefiles" on windows)
 4. make
-5. ./racesim.exe
+5. ./RaceSim.exe <Path to config>
 
 # To Use
-As of January 12th, 2024, this framework can only assess the viability of a speed profile given the gen 11.5 car model and the necessary LUTs. The following ```main.cpp``` demonstrates the method by which to do this:
+Modify the main.cpp file in order to run a simulation. This would involve creating a car model, a route, a simulation object, and running an optimizer. The following ```main.cpp``` demonstrates the method by which to do this:
 
 ```
 int main(int argc, char* argv[]) {
