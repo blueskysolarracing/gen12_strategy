@@ -5,7 +5,7 @@ This framework intends to provide a variety of optimization algorithms and car m
 From Gen12_Strategy/RaceSim/
 1. mkdir build
 2. cd build
-3. cmake ..
+3. cmake .. (cmake .. -G "MinGW Makefiles" if on windows)
 4. make
 5. ./racesim.exe
 
