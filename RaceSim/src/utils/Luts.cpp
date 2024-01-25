@@ -11,9 +11,15 @@
 #include <utilities.h>
 #include <date.h>
 #include <config.h>
+#include "spdlog/spdlog.h"
 
-Lut::Lut(std::string lut_path) {
-	std::fstream lut(lut_path);
+template <typename T>
+Base_Lut<T>::Base_Lut(const std::string path) {
+	lut_path = path;
+}
+
+void Basic_Lut::load_LUT() {
+	std::fstream lut(this->lut_path);
 	assert(lut.is_open() && "Unable to open efficiency lut file");
 	std::string line;
 	std::string cell;
@@ -32,25 +38,27 @@ Lut::Lut(std::string lut_path) {
 		}
 	}
 
-    num_rows = values.size();
+    this->num_rows = values.size();
 	assert(num_rows > 0);
-    num_cols = values[0].size();
+    this->num_cols = values[0].size();
 }
 
-Lut::Lut() {
-	std::cout << "Please provide a file path." << std::endl;
-	return;
-}
-
-double Lut::get_value(size_t row_idx, size_t col_idx) {
-	assert(row_idx >= 0 && row_idx < num_rows && col_idx >= 0 && col_idx < num_cols);
+double Basic_Lut::get_value(size_t row_idx, size_t col_idx) {
+	if (row_idx < 0 || row_idx >= this->num_rows || col_idx < 0 || col_idx >= this->num_cols) {
+		spdlog::error("");
+	}
 	return values[row_idx][col_idx];
 }
 
-/* Load an efficiency csv lookup table */
-Eff_Lut::Eff_Lut(std::string lut_path) {
-	std::fstream lut(lut_path);
-	assert(lut.is_open() && "Unable to open efficiency lut file");
+Basic_Lut::Basic_Lut(const std::string lut_path) : Base_Lut<double>(lut_path) {
+	load_LUT();
+}
+
+void Eff_Lut::load_LUT() {
+	std::fstream lut(this->lut_path);
+	if (!lut.is_open()) {
+		spdlog::warn("Unable to open efficiency lut file: " + this->lut_path);
+	}
 	std::string line;
 
 	// Read first row values
@@ -77,22 +85,21 @@ Eff_Lut::Eff_Lut(std::string lut_path) {
 		double row_val = std::stod(cell);
 		row_values.push_back(row_val);
 
-		values.emplace_back(std::vector<double>());
+		this->values.emplace_back(std::vector<double>());
 		while (!linestream.eof()) {
 			std::getline(linestream, cell, ',');
 			assert(isDouble(cell) && "Value is not a number.");
 			double val = std::stod(cell);
-			values.back().emplace_back(val);
+			this->values.back().emplace_back(val);
 		}
 	}
 
-    num_cols = column_values.size();
-    num_rows = row_values.size();
+    this->num_cols = column_values.size();
+    this->num_rows = row_values.size();
 }
 
-Eff_Lut::Eff_Lut() {
-	std::cout << "Please provide a file path." << std::endl;
-	return;
+Eff_Lut::Eff_Lut(const std::string lut_path) : Base_Lut<double>(lut_path) {
+	load_LUT();
 }
 
 double Eff_Lut::get_value(double row_value, double column_value) {
@@ -115,8 +122,12 @@ double Eff_Lut::get_value(double row_value, double column_value) {
     return values[row][col];
 }
 
-Forecast_Lut::Forecast_Lut(std::string lut_path) {
-	std::fstream file(lut_path);
+Forecast_Lut::Forecast_Lut(std::string lut_path) : Base_Lut<double>(lut_path) {
+	load_LUT();
+}
+
+void Forecast_Lut::load_LUT() {
+	std::fstream file(this->lut_path);
 	std::string times_line;
 	file >> times_line;
 	std::stringstream times_stream(times_line);
@@ -125,8 +136,6 @@ Forecast_Lut::Forecast_Lut(std::string lut_path) {
 	std::string time;
 	std::getline(times_stream, time, ',');
 	std::getline(times_stream, time, ',');
-
-	std::cout << "Loading: " << lut_path << std::endl;
 
 	/* Create an array of the time keys */
 	while (!times_stream.eof()) {
@@ -180,31 +189,24 @@ Forecast_Lut::Forecast_Lut(std::string lut_path) {
 		double value = std::stod(cell);
 		std::vector<double> inner_vector;
 		inner_vector.emplace_back(value);
-		forecast_values.push_back(inner_vector);
+		this->values.push_back(inner_vector);
 
 		int column_counter = 0;
 		while (!file_linestream.eof()){
 			std::getline(file_linestream, cell, ',');
 			assert(isDouble(cell) && "Value is not a number.");
-			forecast_values[row_counter].push_back(std::stod(cell));
+			this->values[row_counter].push_back(std::stod(cell));
 			column_counter++;
 		}
 
 		row_counter++;
 	}
 
-	num_rows = forecast_coords.size();
-	num_cols = forecast_times.size();
+	this->num_rows = forecast_coords.size();
+	this->num_cols = forecast_times.size();
 
 	row_cache = 0;
 	column_cache = 0;
-
-	std::cout << "Loaded: " << lut_path << std::endl;
-}
-
-Forecast_Lut::Forecast_Lut() {
-	std::cout << "Please provide a the path to the LUT." << std::endl;
-	return;
 }
 
 double Forecast_Lut::get_value(ForecastCoord coord, time_t time) {
@@ -232,7 +234,7 @@ double Forecast_Lut::get_value(ForecastCoord coord, time_t time) {
     }
 
 	assert(row_key >= 0 && row_key < num_rows && col_key >= 0 && col_key < num_cols);
-    return forecast_values[row_key][col_key];
+    return this->values[row_key][col_key];
 }
 
 void Forecast_Lut::initialize_caches(ForecastCoord coord, time_t time) {
@@ -315,5 +317,5 @@ void Forecast_Lut::update_index_cache(ForecastCoord coord, time_t time) {
 }
 
 double Forecast_Lut::get_value_with_cache() {
-	return forecast_values[row_cache][column_cache];
+	return this->values[row_cache][column_cache];
 }

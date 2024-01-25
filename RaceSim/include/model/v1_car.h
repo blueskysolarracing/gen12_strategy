@@ -8,7 +8,7 @@ Model of the car implemented for gen 11.5
 #include <base_car.h>
 #include <units.h>
 
-class V1_Car : Car {
+class V1_Car : public Car {
 private:
     double max_power;
 

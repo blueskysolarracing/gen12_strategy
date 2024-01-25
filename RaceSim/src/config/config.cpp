@@ -8,6 +8,7 @@
 #include <Luts.h>
 #include <Globals.h>
 #include "pugixml.hpp"
+#include "spdlog/spdlog.h"
 
 Config* Config::instance_ptr = nullptr;
 
@@ -26,8 +27,8 @@ Config::Config(std::string config_file_path) {
     std::string luts = config_file_path.substr(0, ind) + "/luts/";
 
 	if (!parsed_config) {
-		std::cout << "Config File could not be loaded" << std::endl;
-		return;
+        spdlog::critical("Config file could not be loaded. Exiting");
+		exit(0);
 	}
 	pugi::xml_node struct_node = doc.child("struct");
 
@@ -83,7 +84,7 @@ Config::Config(std::string config_file_path) {
 	num_segments = std::stoi(struct_node.child("Strategy").child("NumSegments").text().get());
 	car_type = std::stoi(struct_node.child("Car").child("Model").text().get());
 
-	std::cout << "---------------------Loaded Config File----------------------" << std::endl;
+    spdlog::info("Loaded config file: " + config_file_path);
 }
 
 Config::~Config() {

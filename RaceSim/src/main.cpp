@@ -17,9 +17,11 @@
 std::string CONFIG_FILE_PATH;
 
 int main(int argc, char* argv[]) {
+    spdlog::set_level(spdlog::level::debug);
+
     if (argc < 2) {
-        std::cout << "Please provide a config file." << std::endl;
-        return 0;
+        spdlog::critical("No config file supplied. Exiting.");
+        exit(0);
     }
 
     /* Load the global configuration file */

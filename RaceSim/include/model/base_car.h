@@ -15,7 +15,7 @@ protected:
     double mass;
     Eff_Lut yint_rolling_resistance;
     Eff_Lut slope_rolling_resistance;
-    Lut power_factors;
+    Basic_Lut power_factors;
     double cda;
     double motor_efficiency;
     double regen_efficiency;

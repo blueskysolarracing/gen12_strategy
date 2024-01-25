@@ -9,7 +9,7 @@ Optimizer that seeks a single constant speed along the route
 #include <route.h>
 #include <sim.h>
 
-class V1_Opt : Optimizer {
+class V1_Opt : public Optimizer {
 public:
     V1_Opt(Sim sim, Route route);
     std::vector<uint32_t> optimize() override;
