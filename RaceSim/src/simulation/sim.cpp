@@ -105,24 +105,24 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile_kph) {
             current_speed = kph2mps(speed_profile_kph[segment_counter]);
         }
 
-        /* Compute distance travelled */
-        double distance_to_travel = get_distance(coord_one, coord_two);
-        double delta_time = distance_to_travel / current_speed;
-        total_distance += distance_to_travel;
+        /* Compute state update of the car */
+        Car_Update update = car->compute_travel_update(
+            coord_one, coord_two, current_speed, curr_time, wind, irr
+        );
 
-        /* Compute energy change between two points */
-        energy_change += car->compute_travel_energy(coord_one, coord_two, current_speed, delta_time, curr_time, wind, irr);
+        /* Update the state of the car */
+        energy_change += update.delta_energy;
+        total_distance += update.delta_distance;
+        curr_time.update_time_seconds(update.delta_time);
 
-        /* Update the time */
-        curr_time.update_time_seconds(delta_time);
-
+        /* Make sure the battery doesn't exceed the maximum bound */
         if (battery_energy + energy_change > max_soc) {
             battery_energy = max_soc;
         } else {
             battery_energy += energy_change;
         }
 
-        /* Penalize a minimum soc bound TODO */
+        /* Invalid simulation if battery goes below 0 */
         if (battery_energy < 0.0) {
             return false;
         }

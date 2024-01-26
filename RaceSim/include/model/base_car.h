@@ -9,6 +9,14 @@ Base class for force balance car models
 #include <Luts.h>
 #include <config.h>
 
+struct Car_Update {
+    double delta_energy;
+    double delta_distance;
+    double delta_time;
+
+    Car_Update(double e, double d, double t) : delta_energy(e), delta_distance(d), delta_time(t) {}
+};
+
 class Car {
 protected:
     /* Car parameters */
@@ -47,8 +55,20 @@ public:
     /* Compute the array energy gains */
     virtual Energy_Change compute_array_gain(double delta_time, double dni, double dhi, double az, double el) = 0;
 
-    /* Compute energy change when moving between two points in a straight line */
-    virtual double compute_travel_energy(Coord coord_one, Coord coord_two, double speed, double delta_time, Time time, Wind wind, Irradiance irr) = 0;
+    /* Compute energy change when moving between two points in a straight line 
+       @param coord_one: starting coordinate
+       @param coord_two: ending coordinate
+       @param speed: speed of the car
+       @param time: current time at coord_one
+       @param Wind, Irradiance: Weather forecast taken at coord_one
+       @return Car_Update: State updates to the car after moving from coord_one to coord_two
+    */
+    virtual Car_Update compute_travel_update(Coord coord_one, 
+                                        Coord coord_two, 
+                                        double speed, 
+                                        Time time, 
+                                        Wind wind, 
+                                        Irradiance irr) = 0;
 
     /* Compute energy change during a static stop */
     virtual double compute_static_energy(Coord coord, Time time, double charge_time, Irradiance irr) = 0;

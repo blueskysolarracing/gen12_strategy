@@ -1,3 +1,4 @@
+#include "spdlog/spdlog.h"
 #include <v1_opt.h>
 #include <base_opt.h>
 #include <vector>
@@ -10,6 +11,7 @@ std::vector<uint32_t> V1_Opt::optimize() {
     /* Loop from speeds 1 -> max. speed to get the maximum viable speed */
     std::vector<uint32_t> speed_profile_kph(1);
     bool last_speed_viability = false;
+    std::vector<uint32_t> last_speed_profile_kph = speed_profile_kph;
     int max_speed = Config::get_instance()->get_max_speed();
 
     for (int i=1; i<=max_speed; i++) {
@@ -17,13 +19,15 @@ std::vector<uint32_t> V1_Opt::optimize() {
         bool current_speed_viability = sim.run_sim(route, speed_profile_kph);
 
         if (current_speed_viability) {
-            std::cout << i << " kph is viable." << std::endl;
+            spdlog::info(std::to_string(i) + " kph is viable.");
         } else {
-            std::cout << i << " kph is not viable." << std::endl;
+            spdlog::info(std::to_string(i) + " kph is not viable.");
         }
         if (last_speed_viability && !current_speed_viability) {
-            return speed_profile_kph;
+            return last_speed_profile_kph;
         }
+        last_speed_viability = current_speed_viability;
+        last_speed_profile_kph = speed_profile_kph;
     }
 
     speed_profile_kph[0] = 0;

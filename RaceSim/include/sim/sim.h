@@ -43,8 +43,6 @@ public:
       @param route: The Route to simulate on
       @param car: The instance of a car to use
       @param speed_profile_kph: The speed to use for each segment
-      
-      TODO: Add parameters for current time, maximum soc bound and minimum soc bound as a percentage
    */
    bool run_sim(Route route, std::vector<uint32_t> speed_profile_kph);
 };

@@ -56,13 +56,25 @@ double V1_Car::compute_net_battery_change(
 	return delta_battery_energy;
 }
 
-double V1_Car::compute_travel_energy(Coord coord_one, Coord coord_two, double speed, double delta_time, Time time, Wind wind, Irradiance irr) {
+Car_Update V1_Car::compute_travel_update(
+    Coord coord_one, 
+    Coord coord_two, 
+    double speed,
+    Time time, 
+    Wind wind, 
+    Irradiance irr
+) {
     /* Get orientation of the car */
     double bearing = get_bearing(coord_one, coord_two);
     SolarAngle az_el = get_az_el_from_bearing(bearing, coord_one, time);
     if (az_el.El < 0) {
         az_el.El = 0.0;
     }
+
+    /* Get time and distance travelled. This is a redundant calculation as sim calculates these values already.
+    For the sake of readability, we calculate them again so that this function takes in only the necessary parameters */
+    double delta_distance = get_distance(coord_one, coord_two);
+    double delta_time = delta_distance / speed;
 
     /* Calculate energy losses */
     double electric_loss = compute_electric_loss(delta_time);
@@ -87,7 +99,7 @@ double V1_Car::compute_travel_energy(Coord coord_one, Coord coord_two, double sp
     Energy_Change array_gain = compute_array_gain(delta_time, irr.dni, irr.dhi, az_el.Az, az_el.El);
     double delta_battery = compute_net_battery_change(array_gain.energy, aero_loss.energy, rolling_loss.energy, gravity_loss.energy, electric_loss, motor_loss);
 
-    return delta_battery;
+    return Car_Update(delta_battery, delta_distance, delta_time);
 }
 
 double V1_Car::compute_static_energy(Coord coord, Time time, double charge_time, Irradiance irr) {
