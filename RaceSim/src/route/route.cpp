@@ -10,6 +10,7 @@
 #include <limits>
 #include <config.h>
 #include <Globals.h>
+#include <route.h>
 
 /* Getters */
 uint32_t Route::get_num_segments() const { return num_segments; }
@@ -77,7 +78,7 @@ Route::Route() {
 	}
 
 	num_points = route_points.size();
-	std::cout << "------------Loaded base route with " << num_points << " coordinates---------" << std::endl;
+	spdlog::info("Loaded base route with " + std::to_string(num_points) + " coordinates");
 }
 
 /* Segment a route into uniform lengths */

@@ -17,12 +17,8 @@
 std::string CONFIG_FILE_PATH;
 
 int main(int argc, char* argv[]) {
-    spdlog::set_level(spdlog::level::debug);
-
-    if (argc < 2) {
-        spdlog::critical("No config file supplied. Exiting.");
-        exit(0);
-    }
+    spdlog::set_level(spdlog::level::info);
+    ASSERT_EXIT(argc >= 2, "No config file supplied. Exiting");
 
     /* Load the global configuration file */
     CONFIG_FILE_PATH = argv[1];

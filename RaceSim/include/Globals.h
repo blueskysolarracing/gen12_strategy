@@ -1,6 +1,7 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 #include <string>
+#include "spdlog/spdlog.h"
 
 #define PI (3.14159265358979323846264338327950288)
 #define DEGREES_IN_PI (180)
@@ -25,5 +26,23 @@ enum optimizer
 {
     V1_OPT = 0,
 };
+
+/* Custom no-exit assertion */
+#define ASSERT(expr, message) \
+    do { \
+        if (!(expr)) { \
+            spdlog::error("Assertion failed: {}", message); \
+            return; \
+        } \
+    } while(0)
+
+/* Custom exit assertion */
+#define ASSERT_EXIT(expr, message) \
+    do { \
+        if (!(expr)) { \
+            spdlog::error("Assertion failed: {}", message); \
+            exit(0); \
+        } \
+    } while(0)
 
 #endif

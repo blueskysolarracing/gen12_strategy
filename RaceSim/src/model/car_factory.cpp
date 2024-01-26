@@ -7,7 +7,7 @@
 
 Car* Car_Factory::get_car(int car_type) {
     if (car_type == V1_CAR) {
-        std::cout << "---------------------Using V1 Car Model----------------------" << std::endl;
+        spdlog::info("Using V1 Car Model");
         return (Car*) new V1_Car();
     } else {
         return nullptr;

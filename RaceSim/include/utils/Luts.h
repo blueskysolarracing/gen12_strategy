@@ -14,14 +14,8 @@
 #define LUTS_H
 
 #include <stdlib.h>
-#include <stdio.h>
-#include <fstream>
-#include <cassert>
-#include <assert.h>
-#include <sstream>
 #include <string.h>
 #include <geography.h>
-#include <limits>
 #include <utilities.h>
 #include <date.h>
 #include <config.h>
