@@ -13,7 +13,7 @@ function [] = main(nCells, direction, bearing, outputName, canopyPath, arrayCell
     % that each stl file must be numbered in order and have the same prefix
     % positionsPath: A string indicating the path to the 4 column csv generated in step 1
 
-    % Example: main(257, "-x", "wscIrr.csv", "./ArraySTLs/canopy.stl", "./ArraySTLs/NA", "./wscAngles.csv")
+    % Example: main(257, "-x", 180.0, "wscIrr.csv", "./ArraySTLs/canopy.stl", "./ArraySTLs/NA", "./wscAngles.csv")
 
     % Output: 
     % An n x d csv named outputName

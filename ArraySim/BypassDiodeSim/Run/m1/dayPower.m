@@ -8,7 +8,8 @@ function [] = dayPower(file, starting_row, ending_row)
     currFol = pwd; 
     ind = str2num(regexprep(currFol,{'\D*([\d\.]+\d)[^\d]*','[^\d\.]*'},{'$1 ', ' '}));
     ind = ind-1;
-    
+    disp(strcat("Starting at row: ", num2str(starting_row)));
+    disp(strcat("Ending at row: ", num2str(ending_row)));
     %Import cellIrr data
     cellIrr = (load(file));
     N = size(cellIrr,2);
@@ -18,9 +19,9 @@ function [] = dayPower(file, starting_row, ending_row)
         disp(' ');
         disp(append('Running row ', int2str(i), ' of ', int2str(size(cellIrr,1)), ' of wscIrr', ' [', int2str(toc), ' seconds elapsed]'));
         disp(' ');
-        dayPow(i,1) = totPower(cellIrr(i,:));
+        dayPow(i,1) = totPower(cellIrr(i,:), "string_layout.json");
         disp(append('Finished row ', int2str(i), ' of ', int2str(size(cellIrr,1)), ' of wscIrr', ' [', int2str(toc), ' seconds elapsed]'));
-        storeuData(dayPow); 
+        storeuData(dayPow, "diode.csv"); 
     end
     
     end
