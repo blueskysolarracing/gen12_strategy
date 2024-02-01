@@ -6,8 +6,8 @@ function [] = main(nCores, irrCsv, numFolders)
 
   pause(2);
 
-  %delete(gcp('nocreate'));
-  %parpool(nCores);
+  delete(gcp('nocreate'));
+  parpool(nCores);
   BasePath = pwd;
 
   counter = 1;
