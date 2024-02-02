@@ -43,6 +43,12 @@ function [totPow] = totPower(cellIrr, string_config)
         
         key = strcat("ss", int2str(substring));
         cells = string_layout.(key);
+
+        if length(cells) == 1
+            cell_ids = cells(1);
+        else
+            cell_ids = cells(1):cells(2);
+        end
         
         cell_ids = cells(1):cells(2);
         for cell = 1:length(cell_ids)
@@ -58,6 +64,12 @@ function [totPow] = totPower(cellIrr, string_config)
         
         key = strcat("ss", int2str(substring));
         cells = string_layout.(key);
+
+        if length(cells) == 1
+            cell_ids = cells(1);
+        else
+            cell_ids = cells(1):cells(2);
+        end
         
         cell_ids = cells(1):cells(2);
         for cell = 1:length(cell_ids)
@@ -72,6 +84,12 @@ function [totPow] = totPower(cellIrr, string_config)
         
         key = strcat("ss", int2str(substring));
         cells = string_layout.(key);
+
+        if length(cells) == 1
+            cell_ids = cells(1);
+        else
+            cell_ids = cells(1):cells(2);
+        end
         
         cell_ids = cells(1):cells(2);
         for cell = 1:length(cell_ids)
