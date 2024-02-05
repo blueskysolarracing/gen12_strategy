@@ -58,9 +58,9 @@ function [totPow] = totPower(cellIrr, cells2Substrings, substrings2Strings, numC
     end
     
     % WARNING: MANUALLY ADD THE MAX OF EACH POWER OUT ARRAY TO STRPOW
-    strPow = strPow + max(diode_string1_power_out);
-    strPow = strPow + max(diode_string2_power_out);
-    strPow = strPow + max(diode_string3_power_out);
+    strPow(1) = max(diode_string1_power_out);
+    strPow(2) = max(diode_string2_power_out);
+    strPow(3) = max(diode_string3_power_out);
 
     %Report total power
     totPow = sum(strPow);
