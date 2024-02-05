@@ -23,7 +23,7 @@ function [totPow] = totPower(cellIrr, cells2Substrings, substrings2Strings, numC
         num_substrings = numel(substrings);
 
         for substring = 1:num_substrings
-            cells = cells2Substrings{substring};
+            cells = cells2Substrings{substrings(substring)};
             irr_diode_string{string} = [irr_diode_string{string}, cellIrr(cells)];
         end
 
