@@ -8,6 +8,7 @@ FetchContent_Declare(
     GIT_TAG v1.13.0
 )
 FetchContent_MakeAvailable(spdlog)
+
 # Project name
 project(RaceSim VERSION 1.0 LANGUAGES CXX)
 
@@ -37,5 +38,4 @@ target_include_directories(RaceSim PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/date
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/pugixml/include
-    spdlog::spdlog
 )

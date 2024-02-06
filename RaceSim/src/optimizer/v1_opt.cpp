@@ -16,7 +16,12 @@ std::vector<uint32_t> V1_Opt::optimize() {
 
     for (int i=1; i<=max_speed; i++) {
         speed_profile_kph[0] = i;
+
+        /* Run the simulation */
         bool current_speed_viability = sim.run_sim(route, speed_profile_kph);
+
+        /* Log the simulation */
+        sim.write_result("out.csv");
 
         if (current_speed_viability) {
             spdlog::info(std::to_string(i) + " kph is viable.");

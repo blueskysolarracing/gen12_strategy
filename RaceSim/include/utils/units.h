@@ -122,7 +122,7 @@ public:
 	void print_utc_readable_time() {std::cout << get_utc_readable_time() << std::endl;}
 	
 	/* Get human readable local time */
-	inline std::string get_local_readable_time() {return asctime(&m_datetime_local);};
+	inline std::string get_local_readable_time() {std::string time = asctime(&m_datetime_local); return time.erase(time.size()-1);};
 
 	/* Get human readable utc time */
 	inline std::string get_utc_readable_time() {return asctime(&m_datetime_utc);}

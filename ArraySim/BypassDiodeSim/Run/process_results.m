@@ -17,6 +17,7 @@ function [average_power] = process_results(power, sun_position)
   hours_vector = hours(time_difference);
 
   area_under_curve = trapz(hours_vector, power_csv);
+  disp(area_under_curve);
   difference_hours = hours(sun_times_dt(num_rows) - sun_times_dt(1));
 
   average_power = area_under_curve / difference_hours;

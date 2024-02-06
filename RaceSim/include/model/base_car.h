@@ -9,12 +9,33 @@ Base class for force balance car models
 #include <Luts.h>
 #include <config.h>
 
+/* Unit update of the car when travelling between two points */
 struct Car_Update {
+    Energy_Change aero;
+    Energy_Change rolling;
+    Energy_Change gravitational;
+    Energy_Change array;
+    SolarAngle az_el;
+    double motor_power;
+    double bearing;
+    double electric;
     double delta_energy;
     double delta_distance;
     double delta_time;
 
-    Car_Update(double e, double d, double t) : delta_energy(e), delta_distance(d), delta_time(t) {}
+    Car_Update(Energy_Change a, 
+               Energy_Change r, 
+               Energy_Change g,
+               Energy_Change ar,
+               SolarAngle ae,
+               double mp,
+               double b,
+               double e,
+               double de,
+               double dd,
+               double dt) : aero(a), rolling(r), gravitational(g), array(ar), 
+               az_el(ae), motor_power(mp), bearing(b), electric(e), 
+               delta_energy(de), delta_distance(dd), delta_time(dt) {}
 };
 
 class Car {

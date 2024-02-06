@@ -99,7 +99,9 @@ Car_Update V1_Car::compute_travel_update(
     Energy_Change array_gain = compute_array_gain(delta_time, irr.dni, irr.dhi, az_el.Az, az_el.El);
     double delta_battery = compute_net_battery_change(array_gain.energy, aero_loss.energy, rolling_loss.energy, gravity_loss.energy, electric_loss, motor_loss);
 
-    return Car_Update(delta_battery, delta_distance, delta_time);
+    return Car_Update(aero_loss, rolling_loss, gravity_loss, 
+                    array_gain, az_el, motor_loss, bearing, electric_loss, 
+                    delta_battery, delta_distance, delta_time);
 }
 
 double V1_Car::compute_static_energy(Coord coord, Time time, double charge_time, Irradiance irr) {
