@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     CONFIG_FILE_PATH = argv[1];
 
     /* Create a model of the car */
-    Car* car = Car_Factory::get_car(Config::get_instance()->get_car_type());
+    Car* car = Car_Factory::get_car(Config::get_instance()->get_model());
     
     /* Create route */
     Route route = Route();
@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
     Sim sim = Sim(car);
 
     /* Create optimizer */
-    Optimizer* opt = Opt_Factory::get_optimizer(Config::get_instance()->get_opt_type(), route, sim);
+    Optimizer* opt = Opt_Factory::get_optimizer(Config::get_instance()->get_optimizer(), route, sim);
     std::vector<uint32_t> result_speed_profile_km = opt->optimize();
     spdlog::info("Viable Speed Profile: {}", result_speed_profile_km[0]);
 

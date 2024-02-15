@@ -8,7 +8,7 @@
 
 class Car_Factory {
 public:
-    static Car* get_car(int car_int);
+    static Car* get_car(std::string car_int);
 };
 
 #endif

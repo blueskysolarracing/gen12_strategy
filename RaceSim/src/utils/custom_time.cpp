@@ -5,6 +5,7 @@
 #include <ctime>
 #include <chrono>
 #include <date.h>
+#include "custom_time.h"
 
 Time::Time() : m_milliseconds(0) {
 	time_t now = time(0);

@@ -9,7 +9,7 @@
 
 class Opt_Factory {
 public:
-    static Optimizer* get_optimizer(int opt_type, Route route, Sim simulator);
+    static Optimizer* get_optimizer(std::string opt_type, Route route, Sim simulator);
 };
 
 #endif

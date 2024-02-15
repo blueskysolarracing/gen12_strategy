@@ -73,7 +73,7 @@ Route::Route() {
 	}
 
 	/* Segment the route */
-	if (Config::get_instance()->get_opt_type() == V1_OPT) {
+	if (Config::get_instance()->get_optimizer() == "Constant") {
 		segment_route_uniform(route_length);
 	}
 
