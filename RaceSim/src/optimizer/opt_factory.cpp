@@ -4,8 +4,8 @@
 #include <base_opt.h>
 #include <Globals.h>
 
-Optimizer* Opt_Factory::get_optimizer(int opt_type, Route route, Sim simulator) {
-    if (opt_type == V1_OPT) {
+Optimizer* Opt_Factory::get_optimizer(std::string opt_type, Route route, Sim simulator) {
+    if (opt_type == "Constant") {
         spdlog::info("Using constant speed optimizer.");
         return (Optimizer*) new V1_Opt(simulator, route);
     } else {

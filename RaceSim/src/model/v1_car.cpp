@@ -71,8 +71,7 @@ Car_Update V1_Car::compute_travel_update(
         az_el.El = 0.0;
     }
 
-    /* Get time and distance travelled. This is a redundant calculation as sim calculates these values already.
-    For the sake of readability, we calculate them again so that this function takes in only the necessary parameters */
+    /* Get time and distance travelled */
     double delta_distance = get_distance(coord_one, coord_two);
     double delta_time = delta_distance / speed;
 

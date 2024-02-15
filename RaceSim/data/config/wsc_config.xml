@@ -98,5 +98,6 @@
         <MotorScaling>1</MotorScaling>
         <!--Coefficient applied to scale the wind speed -->
         <WindSpeedScaling>1</WindSpeedScaling>
+        <SimulationType>2</SimulationType>
     </Strategy>
 </struct>

@@ -9,25 +9,31 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
+FetchContent_Declare(
+    yaml-cpp
+    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+    GIT_TAG 0.8.0
+)
+FetchContent_MakeAvailable(yaml-cpp)
+
 # Project name
 project(RaceSim VERSION 1.0 LANGUAGES CXX)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 11)
-
-# Include src files - GLOB bad practice but good enough for this project
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-message(STATUS "RaceSim src files: ${SOURCES}")
-
-# Add the main executable
-add_executable(RaceSim ${SOURCES})
-target_link_libraries(RaceSim PRIVATE pugixml date spdlog::spdlog)
+set(CMAKE_CXX_STANDARD_REQURED 17)
 
 # Add external libraries
 add_subdirectory(libs/date)
 add_subdirectory(libs/pugixml)
 
-# Include directories
+# Include src files - GLOB bad practice but good enough for this project
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+
+# Add the main executable
+add_executable(RaceSim ${SOURCES})
+target_link_libraries(RaceSim PRIVATE pugixml date spdlog::spdlog yaml-cpp)
+
+# Include directories for the target executable
 target_include_directories(RaceSim PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/config
@@ -39,3 +45,5 @@ target_include_directories(RaceSim PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/date
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/pugixml/include
 )
+
+install(TARGETS RaceSim DESTINATION ${CMAKE_SOURCE_DIR})
