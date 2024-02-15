@@ -28,7 +28,6 @@ add_subdirectory(libs/pugixml)
 
 # Include src files - GLOB bad practice but good enough for this project
 file(GLOB_RECURSE SOURCES "src/*.cpp")
-message(STATUS "RaceSim src files: ${SOURCES}")
 
 # Add the main executable
 add_executable(RaceSim ${SOURCES})
@@ -46,3 +45,5 @@ target_include_directories(RaceSim PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/date
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/pugixml/include
 )
+
+install(TARGETS RaceSim DESTINATION ${CMAKE_SOURCE_DIR})

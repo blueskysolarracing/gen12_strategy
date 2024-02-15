@@ -41,6 +41,7 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile_kph) {
 			starting_route_index = i;
 		}
 	}
+    spdlog::debug("Starting SOC: {}", max_soc);
 
     for (size_t idx=starting_route_index; idx<num_points-1; idx++) {
         current_coord = route_points[idx];
@@ -118,6 +119,7 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile_kph) {
         } else {
             battery_energy += delta_energy;
         }
+        spdlog::debug("Battery Energy: {}", battery_energy);
         /* Update the logs */
         update_logs(update);
 
@@ -133,7 +135,7 @@ void Sim::reset_vars() {
     double max_soc = Config::get_instance()->get_max_soc();
     Coord starting_coord = Config::get_instance()->get_gps_coordinates();
     battery_energy = max_soc;
-    //curr_time = *Config::get_instance()->get_current_date_time();
+    curr_time = *Config::get_instance()->get_current_date_time();
     wind_speed_lut.initialize_caches(starting_coord, curr_time.get_utc_time_point());
     wind_dir_lut.initialize_caches(starting_coord, curr_time.get_utc_time_point());
     dni_lut.initialize_caches(starting_coord, curr_time.get_utc_time_point());
@@ -249,10 +251,10 @@ Sim::Sim(Car* model) :
     wind_dir_lut(Forecast_Lut(Config::get_instance()->get_wind_direction_path())),
     dni_lut(Forecast_Lut(Config::get_instance()->get_dni_path())),
     dhi_lut(Forecast_Lut(Config::get_instance()->get_dhi_path())),
-    control_stop_charge_time(Config::get_instance()->get_control_stop_charge_time()),
-    //race_start(Config::get_instance()->get_race_start_time()),
-    //race_end(Config::get_instance()->get_race_end_time()),
-    starting_coord(Config::get_instance()->get_gps_coordinates())
-   // curr_time(*Config::get_instance()->get_current_date_time())
+    control_stop_charge_time(Config::get_instance()->get_control_stop_charge_time() / 60.0),
+    race_start(Config::get_instance()->get_race_start_time()),
+    race_end(Config::get_instance()->get_race_end_time()),
+    starting_coord(Config::get_instance()->get_gps_coordinates()),
+    curr_time(*Config::get_instance()->get_current_date_time())
     {
 }

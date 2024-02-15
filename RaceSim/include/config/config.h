@@ -13,7 +13,9 @@
 #include <unordered_map>
 #include <config_param.h>
 
-/* Define all config parameters */
+/* Define all config parameters
+   PARAM(<parameter name as it appears exactly in the configuration file>, <data type>, <default value>)
+ */
 #define CONFIG_PARAMETERS\
 	PARAM(max_soc, double, 5.2)\
 	PARAM(tire_pressure, double, 5.5)\
@@ -42,26 +44,30 @@
 	PARAM(wind_speed_path, std::string, "/dynamic/wind_speed_10m.csv") \
 	PARAM(control_stops, std::string, "2962,5559,9462,11421,14439,16990,20832,23202,25987") \
 	PARAM(control_stop_charge_time, double, 30) \
-	PARAM(race_start_time, std::string, "08:00:00") \
-	PARAM(race_end_time, std::string, "17:00:00") \
+	PARAM(race_start_time, int, 8) \
+	PARAM(race_end_time, int, 17) \
 	PARAM(current_soc, double, 100) \
 	PARAM(gps_coordinates, Coord, Coord()) \
-	PARAM(current_date_time, std::string, "2023-10-22 08:00:00") \
+	PARAM(current_date_time, Time*, new Time(create_time("2024-01-01 08:00:00"), -9.5)) \
 	PARAM(utc_adjustment, double, -9.5) \
 	PARAM(model, std::string, "Gen 11.5") \
 	PARAM(optimizer, std::string, "Constant") \
 	PARAM(min_speed, double, 40) \
 	PARAM(max_speed, double, 100) \
 	PARAM(num_segments, double, 1) \
-/*CHANGE GPS_COORDINATES BACK TO COORD DATATYPE*/
+
 class Config {
 private:
+	/* Path to the config file */
 	std::string file_path;
+
+	/* Parsed config */
 	static YAML::Node config;
 
 	/* Map with all parsed key-value pairs from the yaml config file */
 	static std::unordered_map<std::string, YAML::Node> key_values;
 
+	/* Singleton pointer */
 	static Config* instance_ptr;
 
 	/* Declare all parameters */
@@ -98,7 +104,7 @@ public:
 	CONFIG_PARAMETERS
 	#undef PARAM
 
-	/* No setters since these parameters should never change after initialization */
+	/* No setters since config parameters should never change after initialization */
 };
 
 #endif

@@ -17,34 +17,34 @@
   battery_efficiency: 0.95
 
 \LutPaths:
-  base_dir: wsc_2023 # Base directory for all luts gen12_strategy/RaceSim/luts/<base_dir>
+  base_dir: /luts/wsc_2023 # Base directory for all luts relative to gen12_strategy/RaceSim/<base_dir>
 
   # All following luts are relative to gen12_strategy/RaceSim/luts/<base_dir>
-  base_route_path: /static/baseroute.csv # 3 column csv --> latitude (degrees) | longitude (degrees) | altitude (km)
-  speed_limits_path: /static/longDistanceSpeedLimit.csv # Unused
-  traffic_signals_path: /static/longDistanceTrafficSignals.csv # Unused
-  power_factor_path: /static/powerfactor.csv
-  roll_res_slope_path: /static/rr2.csv
-  roll_res_yint_path: /static/rr1.csv
-  # driving_efficiency: /static/drivingeff.csv # Unused
-  # regen_efficiency: /static/regeneff.csv # Unused
-  # battery_efficiency: /static/batteff.csv # Unused
-  dni_path: /dynamic/dni.csv
-  dhi_path: /dynamic/dhi.csv
-  wind_direction_path: /dynamic/wind_direction_10m.csv
-  wind_speed_path: /dynamic/wind_speed_10m.csv
+  base_route_path: ./data/luts/wsc_2023/static/baseroute.csv # 3 column csv --> latitude (degrees) | longitude (degrees) | altitude (km)
+  speed_limits_path: ./data/luts/wsc_2023/static/longDistanceSpeedLimit.csv # Unused
+  traffic_signals_path: ./data/luts/wsc_2023/static/longDistanceTrafficSignals.csv # Unused
+  power_factor_path: ./data/luts/wsc_2023/static/powerfactor.csv
+  roll_res_slope_path: ./data/luts/wsc_2023/static/rr2.csv
+  roll_res_yint_path: ./data/luts/wsc_2023/static/rr1.csv
+  # driving_efficiency: /luts/wsc_2023/static/drivingeff.csv # Unused
+  # regen_efficiency: /luts/wsc_2023/static/regeneff.csv # Unused
+  # battery_efficiency: /luts/wsc_2023/static/batteff.csv # Unused
+  dni_path: ./data/luts/wsc_2023/dynamic/dni.csv
+  dhi_path: ./data/luts/wsc_2023/dynamic/dhi.csv
+  wind_direction_path: ./data/luts/wsc_2023/dynamic/wind_direction_10m.csv
+  wind_speed_path: ./data/luts/wsc_2023/dynamic/wind_speed_10m.csv
 
 \Route: # Route conditions
   control_stops: 2962,5559,9462,11421,14439,16990,20832,23202,25987 # Coordinate indices in the route csv 
   control_stop_charge_time: 30 # in minutes
-  race_start_time: 08:00:00 # in 24 hour time
-  race_end_time: 17:00:00 # in 24 hour time
+  race_start_time: 8 # in 24 hour time TODO
+  race_end_time: 17 # in 24 hour time TODO
 
 \Telemetry: # Current state of the car
-  current_soc: 100 # Percentage out of 100. Starting soc will be calculated as current_soc / 100.0 * max_soc
+  current_soc: 5.2 # Percentage out of 100. Starting soc will be calculated as current_soc / 100.0 * max_soc
   gps_coordinates: -12.46322,130.84618,24.7 # Lat(degrees),Lon(degrees),Alt(metres)
   current_date_time: 2023-10-22 08:00:00 # YYYY-MM-DD HH:MM:SS LOCAL time. Hour MUST be in 24 hour format
-  utc_adjustment: -9.5 # In hour conversion from local time to utc
+  utc_adjustment: -9.5 # In hour conversion from local time to utc. This must be present
 
 \Optimizer:
   model: Gen 11.5 # Force model of the car to use
@@ -54,4 +54,3 @@
   num_segments: 1 # Number of segments to split the route into. Note that if optimizer = constant, this is
                   # 1 by force
   # Todo: add something for ending soc of each segment and minimum soc (penalized)
-  
