@@ -82,7 +82,7 @@ private:
 	#define PARAM(name, type, default_value)\
 		name(Config_Param<type>(#name, default_value, key_values)),
 
-	/* Load all parameters from xml file. Should only be called from get_instance() */
+	/* Load all parameters from yaml file. Should only be called from get_instance() */
 	Config(std::string config_file_path) : CONFIG_PARAMETERS file_path(config_file_path){}
 
 	#undef PARAM
