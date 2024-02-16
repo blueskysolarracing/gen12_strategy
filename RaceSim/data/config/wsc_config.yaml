@@ -41,7 +41,7 @@
   race_end_time: 17 # in 24 hour time TODO
 
 \Telemetry: # Current state of the car
-  current_soc: 5.2 # Percentage out of 100. Starting soc will be calculated as current_soc / 100.0 * max_soc
+  current_soc: 5.2 # in kWh, should be <= max_soc
   gps_coordinates: -12.46322,130.84618,24.7 # Lat(degrees),Lon(degrees),Alt(metres)
   current_date_time: 2023-10-22 08:00:00 # YYYY-MM-DD HH:MM:SS LOCAL time. Hour MUST be in 24 hour format
   utc_adjustment: -9.5 # In hour conversion from local time to utc. This must be present

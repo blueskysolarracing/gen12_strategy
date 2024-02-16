@@ -24,14 +24,13 @@ set(CMAKE_CXX_STANDARD_REQURED 17)
 
 # Add external libraries
 add_subdirectory(libs/date)
-add_subdirectory(libs/pugixml)
 
 # Include src files - GLOB bad practice but good enough for this project
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 # Add the main executable
 add_executable(RaceSim ${SOURCES})
-target_link_libraries(RaceSim PRIVATE pugixml date spdlog::spdlog yaml-cpp)
+target_link_libraries(RaceSim PRIVATE date spdlog::spdlog yaml-cpp)
 
 # Include directories for the target executable
 target_include_directories(RaceSim PRIVATE
@@ -43,7 +42,6 @@ target_include_directories(RaceSim PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/sim
     ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/date
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/pugixml/include
 )
 
 install(TARGETS RaceSim DESTINATION ${CMAKE_SOURCE_DIR})
