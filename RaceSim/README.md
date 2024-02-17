@@ -14,16 +14,14 @@ Modify the main.cpp file in order to run a simulation. This would involve creati
 
 ```
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cout << "Please provide a config file." << std::endl;
-        return 0;
-    }
+    spdlog::set_level(spdlog::level::info);
+    ASSERT_EXIT(argc >= 2, "No config file supplied. Exiting");
 
     /* Load the global configuration file */
     CONFIG_FILE_PATH = argv[1];
 
     /* Create a model of the car */
-    Car* car = Car_Factory::get_car(Config::get_instance()->get_car_type());
+    Car* car = Car_Factory::get_car(Config::get_instance()->get_model());
     
     /* Create route */
     Route route = Route();
@@ -31,15 +29,14 @@ int main(int argc, char* argv[]) {
     /* Create simulator */
     Sim sim = Sim(car);
 
-    /* Create optimizer (constant speed) */
-    Optimizer* opt = Opt_Factory::get_optimizer(Config::get_instance()->get_opt_type(), route, sim);
-
-    /* Optimize */
-    std::vector<uint32_t> result_speed_profile_kph = opt->optimize();
-    std::cout << "Viable Speed Profile: " << result_speed_profile_kph[0] << std::endl;
+    /* Create optimizer */
+    Optimizer* opt = Opt_Factory::get_optimizer(Config::get_instance()->get_optimizer(), route, sim);
+    std::vector<uint32_t> result_speed_profile_km = opt->optimize();
+    spdlog::info("Viable Speed Profile: {}", result_speed_profile_km[0]);
 
     return 0;
 }
+
 ```
 
 # Scientific Units used 
