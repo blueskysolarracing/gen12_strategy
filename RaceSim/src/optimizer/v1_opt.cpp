@@ -13,8 +13,9 @@ std::vector<uint32_t> V1_Opt::optimize() {
     bool last_speed_viability = false;
     std::vector<uint32_t> last_speed_profile_kph = speed_profile_kph;
     int max_speed = Config::get_instance()->get_max_speed();
+    int min_speed = Config::get_instance()->get_min_speed();
 
-    for (int i=1; i<=max_speed; i++) {
+    for (int i=min_speed; i<=max_speed; i++) {
         speed_profile_kph[0] = i;
 
         /* Run the simulation */

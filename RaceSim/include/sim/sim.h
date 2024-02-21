@@ -33,6 +33,7 @@ private:
    double battery_energy;
    double accumulated_distance;
    double delta_energy;
+   double curr_speed;
    Coord current_coord;
    Coord next_coord;
 
@@ -50,6 +51,7 @@ private:
    std::vector<double> array_energy_log;
    std::vector<double> array_power_log;
    std::vector<double> motor_power_log;
+   std::vector<double> motor_energy_log;
    std::vector<double> aero_power_log;
    std::vector<double> aero_energy_log;
    std::vector<double> rolling_power_log;

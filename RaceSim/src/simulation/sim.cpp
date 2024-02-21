@@ -28,7 +28,7 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile_kph) {
 
     uint32_t segment_counter = 0;
     std::pair<uint32_t, uint32_t> current_segment = segments[segment_counter];
-    double current_speed = kph2mps(speed_profile_kph[segment_counter]);
+    curr_speed = kph2mps(speed_profile_kph[segment_counter]);
 
     /* Get starting position in the route */
     size_t starting_route_index = 0;
@@ -100,12 +100,12 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile_kph) {
         if (idx > current_segment.second) {
             segment_counter++;
             current_segment = segments[segment_counter];
-            current_speed = kph2mps(speed_profile_kph[segment_counter]);
+            curr_speed = kph2mps(speed_profile_kph[segment_counter]);
         }
 
         /* Compute state update of the car */
         Car_Update update = car->compute_travel_update(
-            current_coord, next_coord, current_speed, curr_time, wind, irr
+            current_coord, next_coord, curr_speed, curr_time, wind, irr
         );
 
         /* Update the running state of the simulation */
@@ -120,6 +120,7 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile_kph) {
             battery_energy += delta_energy;
         }
         spdlog::debug("Battery Energy: {}", battery_energy);
+
         /* Update the logs */
         update_logs(update);
 
@@ -157,6 +158,7 @@ void Sim::reset_logs() {
     array_energy_log.clear();
     array_power_log.clear();
     motor_power_log.clear();
+    motor_energy_log.clear();
     aero_power_log.clear();
     aero_energy_log.clear();
     rolling_power_log.clear();
@@ -179,7 +181,9 @@ void Sim::update_logs(Car_Update update) {
     altitude_log.push_back(next_coord.alt);
     array_energy_log.push_back(update.array.energy);
     array_power_log.push_back(update.array.power);
+    speed_log.push_back(curr_speed);
     motor_power_log.push_back(update.motor_power);
+    motor_energy_log.push_back(update.motor_energy);
     aero_power_log.push_back(update.aero.power);
     aero_energy_log.push_back(update.aero.energy);
     rolling_power_log.push_back(update.rolling.power);
@@ -194,27 +198,28 @@ void Sim::write_result(std::string csv_path) {
     std::ofstream output_csv(csv_path);
 
     if (output_csv.is_open()) {
-        output_csv << "Battery Charge,"
-                   << "Accumulated Distance,"
+        output_csv << "Battery Charge(kWh),"
+                   << "Accumulated Distance(m),"
                    << "DateTime,"
-                   << "Azimuth,"
-                   << "Elevation,"
-                   << "Bearing,"
+                   << "Azimuth(Degrees),"
+                   << "Elevation(Degrees),"
+                   << "Bearing(Degrees),"
                    << "Latitude,"
                    << "Longitude,"
-                   << "Altitude,"
-                   << "Speed,"
-                   << "Array Energy,"
-                   << "Array Power,"
-                   << "Motor Power,"
-                   << "Aero Power,"
-                   << "Aero Energy,"
-                   << "Rolling Power,"
-                   << "Rolling Energy,"
-                   << "Gravitational Power,"
-                   << "Gravitational Energy,"
-                   << "Electric Energy,"
-                   << "Delta Battery\n";
+                   << "Altitude(m),"
+                   << "Speed(m/s),"
+                   << "Array Power(W),"
+                   << "Array Energy(kWh),"
+                   << "Motor Power(W),"
+                   << "Motor Energy(kWh)"
+                   << "Aero Power(W),"
+                   << "Aero Energy(kWh),"
+                   << "Rolling Power(W),"
+                   << "Rolling Energy(kWh),"
+                   << "Gravitational Power(W),"
+                   << "Gravitational Energy(kWh),"
+                   << "Electric Energy(W),"
+                   << "Delta Battery(kWh)\n";
 
         int num_points = battery_energy_log.size();
         for (int i=0; i<num_points; i++) {
@@ -227,8 +232,11 @@ void Sim::write_result(std::string csv_path) {
             output_csv << std::to_string(latitude_log[i]) + ",";
             output_csv << std::to_string(longitude_log[i]) + ",";
             output_csv << std::to_string(altitude_log[i]) + ",";
-            output_csv << std::to_string(array_energy_log[i]) + ",";
+            output_csv << std::to_string(speed_log[i]) + ",";
             output_csv << std::to_string(array_power_log[i]) + ",";
+            output_csv << std::to_string(array_energy_log[i]) + ",";
+            output_csv << std::to_string(motor_power_log[i]) + ",";
+            output_csv << std::to_string(motor_energy_log[i]) + ",";
             output_csv << std::to_string(aero_power_log[i]) + ",";
             output_csv << std::to_string(aero_energy_log[i]) + ",";
             output_csv << std::to_string(rolling_power_log[i]) + ",";

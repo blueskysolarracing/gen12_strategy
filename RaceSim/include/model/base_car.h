@@ -17,6 +17,7 @@ struct Car_Update {
     Energy_Change array;
     SolarAngle az_el;
     double motor_power;
+    double motor_energy;
     double bearing;
     double electric;
     double delta_energy;
@@ -29,12 +30,13 @@ struct Car_Update {
                Energy_Change ar,
                SolarAngle ae,
                double mp,
+               double me,
                double b,
                double e,
                double de,
                double dd,
                double dt) : aero(a), rolling(r), gravitational(g), array(ar), 
-               az_el(ae), motor_power(mp), bearing(b), electric(e), 
+               az_el(ae), motor_power(mp), motor_energy(me), bearing(b), electric(e), 
                delta_energy(de), delta_distance(dd), delta_time(dt) {}
 };
 
