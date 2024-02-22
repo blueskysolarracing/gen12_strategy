@@ -43,6 +43,7 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile_kph) {
 	}
     spdlog::debug("Starting SOC: {}", max_soc);
 
+    bool first_day = Config::get_instance()->get_first_day();
     for (size_t idx=starting_route_index; idx<num_points-1; idx++) {
         current_coord = route_points[idx];
         next_coord = route_points[idx+1];
@@ -70,7 +71,8 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile_kph) {
         Irradiance irr = Irradiance(dni, dhi);
 
         /* Overnight stop */
-        while (curr_time.get_local_hours() > race_end || curr_time.get_local_hours() < race_start) {
+        while (curr_time > race_end || (!first_day && curr_time < race_start)) {
+            first_day = false;
             /* Step in 30 second intervals */
             SolarAngle sun = SolarAngle();
             get_az_el(curr_time.get_utc_time_point(), current_coord.lat, current_coord.lon, current_coord.alt, &sun.Az, &sun.El);
@@ -260,8 +262,8 @@ Sim::Sim(Car* model) :
     dni_lut(Forecast_Lut(Config::get_instance()->get_dni_path())),
     dhi_lut(Forecast_Lut(Config::get_instance()->get_dhi_path())),
     control_stop_charge_time(Config::get_instance()->get_control_stop_charge_time() / 60.0),
-    race_start(Config::get_instance()->get_race_start_time()),
-    race_end(Config::get_instance()->get_race_end_time()),
+    race_start(*Config::get_instance()->get_day_start_time()),
+    race_end(*Config::get_instance()->get_day_end_time()),
     starting_coord(Config::get_instance()->get_gps_coordinates()),
     curr_time(*Config::get_instance()->get_current_date_time())
     {

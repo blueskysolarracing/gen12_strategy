@@ -30,18 +30,6 @@ std::set<size_t> convert_string_to_int_set(std::string input) {
     return result_set;
 }
 
-time_t create_time(std::string input) {
-
-    std::istringstream iss(input);
-    date::sys_time<std::chrono::seconds> epoch_time;
-    iss >> date::parse("%F %T", epoch_time);
-
-    // Convert sys_time to time_t
-    time_t local_time_t = std::chrono::system_clock::to_time_t(epoch_time);
-
-    return local_time_t;
-}
-
 // Create a coordinate struct from a lat, lon, altitude string
 Coord create_coord(std::string input) {
     double lat, lon, alt;

@@ -22,16 +22,36 @@ private:
 
 	/* Special field for milliseconds since the tm struct's resolution is up to seconds */
     double m_milliseconds;
-public:
-	/* Use the current time as the starting point */
-    Time();
 
-	/** Specify a starting time
-     * @param local_time_point epoch time representing local time
-     * @param utc_adjustment Adjustment in hours to utc e.g. If the time being represented is
+	/* Indication for a HH:MM:SS only timestamp */
+	bool hh_mm_ss_only;
+
+	std::string local_time;
+
+	void HH_MM_SS_constructor(std::string local_time_point);
+	
+public:
+    Time() {};
+
+	/**
+	 * Create time with specific starting time
+	 * @param local_time_point string in YYYY-MM-DD HH:MM:SS local 24 hour time format
+	 * @param utc_adjustment Adjustment in hours from local time to utc e.g. If the time being represented is
      * 10:30am in Alice Springs which is 9.5 hours ahead of UTC, then this should be -9.5
-    */
-	Time(time_t local_time_point, double utc_adjustment);
+	*/
+	Time(std::string local_time_point, double utc_adjustment);
+
+	/** 
+	 * Create time without YYYY/MM/DD information. This will only fill in the m_datetime_local struct
+	 * @param local_time_point string in HH:MM:SS local 24 hour time format
+	*/
+	Time(std::string local_time_point);
+
+	/** Returns true if the lhs local timestamp is ahead of the rhs local timestamp */
+    bool operator>(const Time& other) const;
+
+	/** Returns true if the rhs local timestamp is ahead of the lhs local timestamp */
+	bool operator<(const Time& other) const;
 
 	/** Get current hour in 24 hour format */
     inline int get_local_hours() { return m_datetime_local.tm_hour; };
@@ -61,16 +81,16 @@ public:
 	void update_current_time(tm curr_time_local, tm curr_time_utc) {m_datetime_local = curr_time_local; m_datetime_utc = curr_time_utc;} 
 
 	/** Print human readable local time */
-	void print_local_readable_time() {std::cout << get_local_readable_time();}
+	void print_local_readable_time() {std::cout << get_local_readable_time() << std::endl;}
 
 	/** Print human readable utc time */
 	void print_utc_readable_time() {std::cout << get_utc_readable_time() << std::endl;}
 	
 	/** Get human readable local time as a string */
-	inline std::string get_local_readable_time() {std::string time = asctime(&m_datetime_local); return time.erase(time.size()-1);};
+	std::string get_local_readable_time();
 
 	/** Get human readable utc time as a string */
-	inline std::string get_utc_readable_time() {return asctime(&m_datetime_utc);}
+	std::string get_utc_readable_time();
 };
 
 #endif /* CUSTOM_TIME_H */

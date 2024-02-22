@@ -23,8 +23,8 @@ private:
 
    /* Simulation parameters */
    double control_stop_charge_time;
-   int race_start; /* Start time of race day in 24 hour */
-   int race_end;   /* End time of race day in 24 hour */
+   Time race_start; /* Start time of race day in 24 hour */
+   Time race_end;   /* End time of race day in 24 hour */
    Coord starting_coord;
    double max_soc;
 

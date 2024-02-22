@@ -44,11 +44,13 @@
 	PARAM(wind_speed_path, std::string, "/dynamic/wind_speed_10m.csv") \
 	PARAM(control_stops, std::string, "2962,5559,9462,11421,14439,16990,20832,23202,25987") \
 	PARAM(control_stop_charge_time, double, 30) \
-	PARAM(race_start_time, int, 8) \
-	PARAM(race_end_time, int, 17) \
+	PARAM(race_start, Time*, new Time("2023-10-22 08:30:00", -9.5)) \
+	PARAM(day_start_time, Time*, new Time("09:00:00")) \
+	PARAM(day_end_time, Time*, new Time("17:00:00")) \
+	PARAM(first_day, bool, true) \
 	PARAM(current_soc, double, 100) \
 	PARAM(gps_coordinates, Coord, Coord()) \
-	PARAM(current_date_time, Time*, new Time(create_time("2024-01-01 08:00:00"), -9.5)) \
+	PARAM(current_date_time, Time*, new Time("2023-10-22 08:30:00", -9.5)) \
 	PARAM(utc_adjustment, double, -9.5) \
 	PARAM(model, std::string, "Gen 11.5") \
 	PARAM(optimizer, std::string, "Constant") \
