@@ -6,6 +6,7 @@
 #include <route.h>
 #include <sim.h>
 #include <pthread.h>
+#include <filesystem>
 
 std::vector<uint32_t> V1_Opt::optimize() {
     /* Loop from speeds 1 -> max. speed to get the maximum viable speed */
@@ -15,14 +16,22 @@ std::vector<uint32_t> V1_Opt::optimize() {
     int max_speed = Config::get_instance()->get_max_speed();
     int min_speed = Config::get_instance()->get_min_speed();
 
+    bool save_csv = Config::get_instance()->get_save_csv();
+
     for (int i=min_speed; i<=max_speed; i++) {
         speed_profile_kph[0] = i;
+
+        if (save_csv) {
+            std::filesystem::create_directory("Results/");
+        }
 
         /* Run the simulation */
         bool current_speed_viability = sim.run_sim(route, speed_profile_kph);
 
         /* Log the simulation */
-        sim.write_result("out.csv");
+        if (save_csv) {
+            sim.write_result("Results/" + std::to_string(speed_profile_kph[0]) + ".csv");
+        }
 
         if (current_speed_viability) {
             spdlog::info(std::to_string(i) + " kph is viable.");

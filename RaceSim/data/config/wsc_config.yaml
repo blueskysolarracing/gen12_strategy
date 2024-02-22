@@ -56,3 +56,6 @@
   num_segments: 1 # Number of segments to split the route into. Note that if optimizer = constant, this is
                   # 1 by force
   # Todo: add something for ending soc of each segment and minimum soc (penalized)
+
+\Simulation:
+  save_csv: true # Save simulation results to CSVs

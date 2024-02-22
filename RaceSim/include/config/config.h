@@ -57,6 +57,7 @@
 	PARAM(min_speed, double, 40) \
 	PARAM(max_speed, double, 100) \
 	PARAM(num_segments, double, 1) \
+	PARAM(save_csv, bool, true) \
 
 class Config {
 private:
