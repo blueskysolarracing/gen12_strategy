@@ -45,7 +45,9 @@ std::vector<uint32_t> V1_Opt::optimize() {
         last_speed_profile_kph = speed_profile_kph;
     }
 
-    speed_profile_kph[0] = 0;
+    if (!last_speed_viability) {
+        speed_profile_kph[0] = 0;
+    }
     return speed_profile_kph;
 }
 

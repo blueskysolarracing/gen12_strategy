@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <units.h>
-#include <set>
+#include <unordered_set>
 #include <custom_time.h>
 
 /* Determine if a string can be represented by a double */
@@ -17,7 +17,7 @@ bool isDouble(std::string str);
  * @param input comma seperated string of integers
  * example: convert_string_to_set("2, 3, 4, 5") --> std::set({1,2,3,4,5})
 */
-std::set<size_t> convert_string_to_int_set(std::string input);
+std::unordered_set<size_t> convert_string_to_int_set(std::string input);
 
 /** Convert a comma seperated string into a coordinate 
  * @param input: comma seperated string of doubles in <lat>, <lon>, <alt> format

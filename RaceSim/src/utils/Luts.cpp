@@ -239,7 +239,6 @@ double Forecast_Lut::get_value(ForecastCoord coord, time_t time) {
 }
 
 void Forecast_Lut::initialize_caches(ForecastCoord coord, time_t time) {
-
 	/* Initialize row cache */
 	Coord forecast_coord_as_coord = Coord(coord);
 	double min_distance = std::numeric_limits<double>::max();

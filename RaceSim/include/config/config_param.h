@@ -20,7 +20,7 @@ public:
         if (key_values.find(name) != key_values.end()) {
             if constexpr (std::is_same<Coord, T>::value) {
                 value = create_coord(key_values[name].as<std::string>());
-            } else if constexpr (std::is_same<std::set<size_t>, T>::value) {
+            } else if constexpr (std::is_same<std::unordered_set<size_t>, T>::value) {
                 value = convert_string_to_int_set(key_values[name].as<std::string>());
             } else if constexpr (std::is_same<Time*, T>::value) {
                 value = new Time(key_values[name].as<std::string>(), key_values["utc_adjustment"].as<double>());

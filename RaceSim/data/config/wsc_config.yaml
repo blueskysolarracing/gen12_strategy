@@ -43,7 +43,7 @@
 \Telemetry: # Current state of the car
   current_soc: 5.2 # in kWh, should be <= max_soc
   gps_coordinates: -12.46322,130.84618,24.7 # Lat(degrees),Lon(degrees),Alt(metres)
-  current_date_time: 2023-10-22 08:30:00 # YYYY-MM-DD HH:MM:SS local 24 hour time
+  current_date_time: 2023-10-22 09:00:00 # YYYY-MM-DD HH:MM:SS local 24 hour time
   first_day: true # Are we in the first day of the race
   utc_adjustment: -9.5 # Hour conversion from local time to UTC. This will be applied to all times. 
                        # This parameter MUST be present
@@ -51,8 +51,8 @@
 \Optimizer:
   model: Gen 11.5 # Force model of the car to use
   optimizer: Constant # type of optimization
-  min_speed: 1 # in km/h. Minimum speed to even consider in any solution
-  max_speed: 100 # in km/h. Maximum speed to consider in any solution. Should be lower than max_car_speed
+  min_speed: 58 # in km/h. Minimum speed to even consider in any solution
+  max_speed: 58 # in km/h. Maximum speed to consider in any solution. Should be lower than max_car_speed
   num_segments: 1 # Number of segments to split the route into. Note that if optimizer = constant, this is
                   # 1 by force
   # Todo: add something for ending soc of each segment and minimum soc (penalized)

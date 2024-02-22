@@ -16,8 +16,8 @@ bool isDouble(std::string str) {
 	return isdigit(str[0]);
 }
 
-std::set<size_t> convert_string_to_int_set(std::string input) {
-	std::set<size_t> result_set;
+std::unordered_set<size_t> convert_string_to_int_set(std::string input) {
+	std::unordered_set<size_t> result_set;
 
     std::stringstream ss(input);
     std::string value;

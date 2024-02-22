@@ -22,7 +22,7 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile_kph) {
     uint32_t num_points = route.get_num_points();
     std::vector<Coord> route_points = route.get_route_points();
     std::vector<std::pair<uint32_t, uint32_t>> segments = route.get_segments();
-    std::unordered_set<uint32_t> control_stops = route.get_control_stops();
+    std::unordered_set<size_t> control_stops = route.get_control_stops();
 
     assert(segments.size() == speed_profile_kph.size());
 
@@ -96,6 +96,7 @@ bool Sim::run_sim(Route route, std::vector<uint32_t> speed_profile_kph) {
         /* Control Stop */
         if (control_stops.find(idx) != control_stops.end()) {
             delta_energy += car->compute_static_energy(current_coord, curr_time, control_stop_charge_time, irr);
+            curr_time.update_time_seconds(control_stop_charge_time);
         }
 
         /* Move from point one to point two */
@@ -213,7 +214,7 @@ void Sim::write_result(std::string csv_path) {
                    << "Array Power(W),"
                    << "Array Energy(kWh),"
                    << "Motor Power(W),"
-                   << "Motor Energy(kWh)"
+                   << "Motor Energy(kWh),"
                    << "Aero Power(W),"
                    << "Aero Energy(kWh),"
                    << "Rolling Power(W),"
@@ -261,7 +262,7 @@ Sim::Sim(Car* model) :
     wind_dir_lut(Forecast_Lut(Config::get_instance()->get_wind_direction_path())),
     dni_lut(Forecast_Lut(Config::get_instance()->get_dni_path())),
     dhi_lut(Forecast_Lut(Config::get_instance()->get_dhi_path())),
-    control_stop_charge_time(Config::get_instance()->get_control_stop_charge_time() / 60.0),
+    control_stop_charge_time(mins2secs(Config::get_instance()->get_control_stop_charge_time())),
     race_start(*Config::get_instance()->get_day_start_time()),
     race_end(*Config::get_instance()->get_day_end_time()),
     starting_coord(Config::get_instance()->get_gps_coordinates()),

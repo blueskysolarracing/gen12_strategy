@@ -7,7 +7,7 @@
 #include <vector>
 #include <units.h>
 #include <Luts.h>
-#include <set>
+#include <unordered_set>
 #include <Globals.h>
 #include <custom_time.h>
 #include <unordered_map>
@@ -42,7 +42,7 @@
 	PARAM(dhi_path, std::string, "/dynamic/dhi.csv") \
 	PARAM(wind_direction_path, std::string, "/dynamic/wind_direction_10m.csv") \
 	PARAM(wind_speed_path, std::string, "/dynamic/wind_speed_10m.csv") \
-	PARAM(control_stops, std::string, "2962,5559,9462,11421,14439,16990,20832,23202,25987") \
+	PARAM(control_stops, std::unordered_set<size_t>, convert_string_to_int_set("2962,5559,9462,11421,14439,16990,20832,23202,25987")) \
 	PARAM(control_stop_charge_time, double, 30) \
 	PARAM(race_start, Time*, new Time("2023-10-22 08:30:00", -9.5)) \
 	PARAM(day_start_time, Time*, new Time("09:00:00")) \

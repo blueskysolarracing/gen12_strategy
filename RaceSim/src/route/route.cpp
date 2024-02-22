@@ -16,7 +16,7 @@
 uint32_t Route::get_num_segments() const { return num_segments; }
 std::vector<std::pair<uint32_t, uint32_t>> Route::get_segments() const {return segments;}
 std::vector<double> Route::get_segment_lengths() const {return segment_lengths;}
-std::unordered_set<uint32_t> Route::get_control_stops() const {return control_stops;}
+std::unordered_set<size_t> Route::get_control_stops() const {return control_stops;}
 std::vector<Coord> Route::get_route_points() const {return route_points;}
 uint32_t Route::get_num_points() const {return num_points;}
 
@@ -24,7 +24,7 @@ uint32_t Route::get_num_points() const {return num_points;}
 void Route::set_num_segments(uint32_t num) {num_segments = num;}
 void Route::set_segments(std::vector<std::pair<uint32_t, uint32_t>> seg) {segments = seg;}
 void Route::set_segment_lengths(std::vector<double> seg_lengths) {segment_lengths = seg_lengths;}
-void Route::set_control_stops(std::unordered_set<uint32_t> c_stops) {control_stops = c_stops;}
+void Route::set_control_stops(std::unordered_set<size_t> c_stops) {control_stops = c_stops;}
 void Route::set_route_points(std::vector<Coord> new_route_points) {route_points = new_route_points;}
 
 /* Load the base route */
@@ -78,6 +78,7 @@ Route::Route() {
 	}
 
 	num_points = route_points.size();
+	control_stops = Config::get_instance()->get_control_stops();
 	spdlog::info("Loaded base route with " + std::to_string(num_points) + " coordinates");
 }
 

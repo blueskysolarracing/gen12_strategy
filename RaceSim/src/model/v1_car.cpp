@@ -42,7 +42,6 @@ Energy_Change V1_Car::compute_array_gain(double delta_time, double dni, double d
     double power_factor = power_factors.get_value(round(el), round(az));
     double power = (power_factor * dni) + (dhi * array_efficiency * array_area);
     double energy = watts2kwh(delta_time, power);
-
     return Energy_Change(power,energy);
 }
 
