@@ -222,7 +222,7 @@ void Sim::write_result(std::string csv_path) {
                    << "Gravitational Power(W),"
                    << "Gravitational Energy(kWh),"
                    << "Electric Energy(W),"
-                   << "Delta Battery(kWh)\n";
+                   << "Delta Battery(kWh),\n";
 
         int num_points = battery_energy_log.size();
         for (int i=0; i<num_points; i++) {
