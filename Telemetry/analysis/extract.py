@@ -15,7 +15,7 @@ query_api = client.query_api()
 
 """Extract array power, motor power, car speed"""
 pptmb_current_query = ' from(bucket: "bssr") \
-  |> range(start: 2023-10-21T01:00:00Z, stop: 2023-10-26T08:00:00Z) \
+  |> range(start: 2023-10-21T01:00:00Z, stop: 2023-10-27T08:00:00Z) \
   |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer") \
   |> filter(fn: (r) => r["_field"] == "PPTMB") \
   |> filter(fn: (r) => r["topic"] == "bus_metrics/current/PPTMB")\
@@ -25,7 +25,7 @@ pptmb_current_query = ' from(bucket: "bssr") \
   |> keep(columns: ["_time", "PPTMB"])'
 
 pptmb_voltage_query = ' from(bucket: "bssr") \
-  |> range(start: 2023-10-21T01:00:00Z, stop: 2023-10-26T08:00:00Z) \
+  |> range(start: 2023-10-21T01:00:00Z, stop: 2023-10-27T08:00:00Z) \
   |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer") \
   |> filter(fn: (r) => r["_field"] == "PPTMB") \
   |> filter(fn: (r) => r["topic"] == "bus_metrics/voltage/PPTMB")\
@@ -35,7 +35,7 @@ pptmb_voltage_query = ' from(bucket: "bssr") \
   |> keep(columns: ["_time", "PPTMB"])'
 
 mcmb_voltage_query = ' from(bucket: "bssr") \
-  |> range(start: 2023-10-21T01:00:00Z, stop: 2023-10-26T08:00:00Z) \
+  |> range(start: 2023-10-21T01:00:00Z, stop: 2023-10-27T08:00:00Z) \
   |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer") \
   |> filter(fn: (r) => r["_field"] == "MCMB") \
   |> filter(fn: (r) => r["topic"] == "bus_metrics/voltage/MCMB")\
@@ -45,7 +45,7 @@ mcmb_voltage_query = ' from(bucket: "bssr") \
   |> keep(columns: ["_time", "MCMB"])'
 
 mcmb_current_query = ' from(bucket: "bssr") \
-  |> range(start: 2023-10-21T01:00:00Z, stop: 2023-10-26T08:00:00Z) \
+  |> range(start: 2023-10-21T01:00:00Z, stop: 2023-10-27T08:00:00Z) \
   |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer") \
   |> filter(fn: (r) => r["_field"] == "MCMB") \
   |> filter(fn: (r) => r["topic"] == "bus_metrics/current/MCMB")\
@@ -55,7 +55,7 @@ mcmb_current_query = ' from(bucket: "bssr") \
   |> keep(columns: ["_time", "MCMB"])'
 
 speed_query = ' from(bucket: "bssr") \
-  |> range(start: 2023-10-21T01:00:00Z, stop: 2023-10-26T08:00:00Z) \
+  |> range(start: 2023-10-20T01:00:00Z, stop: 2023-10-27T08:00:00Z) \
   |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer") \
   |> filter(fn: (r) => r["_field"] == "car_speed") \
   |> filter(fn: (r) => r["topic"] == "mcmb/car_speed")\
