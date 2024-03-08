@@ -25,15 +25,8 @@ set(CMAKE_CXX_STANDARD_REQURED 17)
 # Add external libraries
 add_subdirectory(libs/date)
 
-# Include src files - GLOB bad practice but good enough for this project
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-
-# Add the main executable
-add_executable(RaceSim ${SOURCES})
-target_link_libraries(RaceSim PRIVATE date spdlog::spdlog yaml-cpp)
-
 # Include directories for the target executable
-target_include_directories(RaceSim PRIVATE
+include_directories(    
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/config
     ${CMAKE_CURRENT_SOURCE_DIR}/include/model
@@ -43,5 +36,20 @@ target_include_directories(RaceSim PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/utils
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/date
 )
+set(EXTERNAL_DEPS date spdlog::spdlog yaml-cpp)
 
-install(TARGETS RaceSim DESTINATION ${CMAKE_SOURCE_DIR})
+# Include src files - GLOB bad practice but good enough for this project
+file(GLOB RACESIM_SOURCES 
+    src/config/*.cpp
+    src/model/*.cpp
+    src/optimizer/*.cpp
+    src/route/*.cpp
+    src/simulation/*.cpp
+    src/utils/*.cpp
+)
+
+# Add the main executable
+add_executable(${PROJECT_NAME} ./src/main.cpp ${RACESIM_SOURCES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${EXTERNAL_DEPS})
+
+install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_SOURCE_DIR})

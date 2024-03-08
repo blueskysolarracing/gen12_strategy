@@ -14,8 +14,6 @@
 #include <base_opt.h>
 #include <opt_factory.h>
 
-std::string CONFIG_FILE_PATH;
-
 int main(int argc, char* argv[]) {
     spdlog::set_level(spdlog::level::info);
     ASSERT_EXIT(argc >= 2, "No config file supplied. Exiting");

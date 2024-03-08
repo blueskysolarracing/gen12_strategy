@@ -5,3 +5,6 @@ build
 slprj/
 .slxc
 Results
+*.dll
+*.dll.a
+*.exe

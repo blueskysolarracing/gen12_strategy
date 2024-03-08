@@ -15,6 +15,7 @@
 Config* Config::instance_ptr = nullptr;
 YAML::Node Config::config;
 std::unordered_map<std::string, YAML::Node> Config::key_values;
+std::string CONFIG_FILE_PATH;
 
 Config* Config::get_instance() {
     if (instance_ptr == NULL) {
