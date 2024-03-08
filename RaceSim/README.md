@@ -6,7 +6,7 @@ From Gen12_Strategy/RaceSim/
 1. mkdir build
 2. cd build
 3. cmake .. (cmake .. -G "MinGW Makefiles" on windows)
-4. make
+4. make install && cd ..
 5. ./RaceSim.exe <Path to config>
 
 # To Use
