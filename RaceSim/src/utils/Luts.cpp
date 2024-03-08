@@ -21,7 +21,6 @@ Base_Lut<T>::Base_Lut(const std::string path) {
 
 void Basic_Lut::load_LUT() {
 	std::fstream lut(this->lut_path);
-	ASSERT(lut.is_open(), "Unable to open efficiency lut file " + this->lut_path);
 	std::string line;
 	std::string cell;
 
@@ -40,13 +39,11 @@ void Basic_Lut::load_LUT() {
 	}
 
     this->num_rows = values.size();
-	ASSERT(num_rows > 0, "No data loaded in from: " + this->lut_path);
     this->num_cols = values[0].size();
 	spdlog::info("Loaded LUT: " + this->lut_path);
 }
 
 double Basic_Lut::get_value(size_t row_idx, size_t col_idx) {
-	ASSERT_EXIT((row_idx >= 0 && row_idx < num_rows && col_idx >= 0 && col_idx < num_cols), "Attempted index out of bounds on: " + this->lut_path);
 	return values[row_idx][col_idx];
 }
 
@@ -56,7 +53,6 @@ Basic_Lut::Basic_Lut(const std::string lut_path) : Base_Lut<double>(lut_path) {
 
 void Eff_Lut::load_LUT() {
 	std::fstream lut(this->lut_path);
-	ASSERT(lut.is_open(), "Unable to open efficiency lut file: " + this->lut_path);	
 	std::string line;
 
 	// Read first row values
@@ -202,7 +198,6 @@ void Forecast_Lut::load_LUT() {
 	}
 
 	this->num_rows = forecast_coords.size();
-	ASSERT(this->num_rows > 0, "No data loaded from: " + this->lut_path);
 	this->num_cols = forecast_times.size();
 
 	row_cache = 0;
@@ -317,7 +312,5 @@ void Forecast_Lut::update_index_cache(ForecastCoord coord, time_t time) {
 }
 
 double Forecast_Lut::get_value_with_cache() {
-	ASSERT_EXIT((row_cache >= 0 && row_cache < this->num_rows && column_cache >= 0 && column_cache < this->num_cols),
-			"Cache values for Forecast Lut outside of bounds.");
 	return this->values[row_cache][column_cache];
 }

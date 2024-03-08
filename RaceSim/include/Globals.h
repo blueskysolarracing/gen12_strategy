@@ -33,22 +33,4 @@ enum optimizer
 extern std::unordered_map<std::string, optimizer> config_to_optimizer;
 extern std::string DEFAULT_OPTIMIZER;
 
-/* Custom no-exit assertion */
-#define ASSERT(expr, message) \
-    do { \
-        if (!(expr)) { \
-            spdlog::error("Assertion failed: {}", message); \
-            return; \
-        } \
-    } while(0)
-
-/* Custom exit assertion */
-#define ASSERT_EXIT(expr, message) \
-    do { \
-        if (!(expr)) { \
-            spdlog::error("Assertion failed: {}", message); \
-            exit(0); \
-        } \
-    } while(0)
-
 #endif

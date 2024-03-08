@@ -16,7 +16,9 @@
 
 int main(int argc, char* argv[]) {
     spdlog::set_level(spdlog::level::info);
-    ASSERT_EXIT(argc >= 2, "No config file supplied. Exiting");
+    if (argc < 2) {
+        spdlog::error("No config file supplied. Exiting");
+    }
 
     /* Load the global configuration file */
     CONFIG_FILE_PATH = argv[1];

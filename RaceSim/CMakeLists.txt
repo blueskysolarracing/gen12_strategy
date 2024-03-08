@@ -10,6 +10,14 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(spdlog)
 
 FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+FetchContent_Declare(
     yaml-cpp
     GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
     GIT_TAG 0.8.0
@@ -48,8 +56,19 @@ file(GLOB RACESIM_SOURCES
     src/utils/*.cpp
 )
 
+add_library(${PROJECT_NAME} SHARED ${RACESIM_SOURCES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${EXTERNAL_DEPS})
+
 # Add the main executable
-add_executable(${PROJECT_NAME} ./src/main.cpp ${RACESIM_SOURCES})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${EXTERNAL_DEPS})
+add_executable(sim ./src/main.cpp)
+target_link_libraries(sim PRIVATE ${EXTERNAL_DEPS} ${PROJECT_NAME})
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_SOURCE_DIR})
+
+enable_testing()
+
+add_executable(GeographyTest tests/GeographyTest.cpp)
+target_link_libraries(GeographyTest gtest gtest_main ${EXTERNAL_DEPS} ${PROJECT_NAME})
+add_test( GeographyTest GeographyTest )
+
+install(TARGETS sim DESTINATION ${CMAKE_SOURCE_DIR})
