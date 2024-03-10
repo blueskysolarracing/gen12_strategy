@@ -7,7 +7,7 @@ From Gen12_Strategy/RaceSim/
 2. cd build
 3. cmake .. (cmake .. -G "MinGW Makefiles" on windows)
 4. make install && cd ..
-5. ./RaceSim.exe <Path to config>
+5. ./RaceSim.exe `<Relative path to config>`
 
 # To Use
 Modify the main.cpp file in order to run a simulation. This would involve creating a car model, a route, a simulation object, and running an optimizer. The following ```main.cpp``` demonstrates the method by which to do this:
