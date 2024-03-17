@@ -17,6 +17,10 @@ for i = 1:3:N
     %Define vectors
     AB = B - A;
     AC = C - A;
+
+    if (isequal(AB, AC))
+        continue;
+    end
     
     %Compute area of triangle
     area = 0.5*norm(cross(AB,AC));  
