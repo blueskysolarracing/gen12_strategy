@@ -71,4 +71,8 @@ add_executable(GeographyTest tests/GeographyTest.cpp)
 target_link_libraries(GeographyTest gtest gtest_main ${EXTERNAL_DEPS} ${PROJECT_NAME})
 add_test( GeographyTest GeographyTest )
 
+add_executable(TimeTest tests/TimeTest.cpp)
+target_link_libraries(TimeTest gtest gtest_main ${EXTERNAL_DEPS} ${PROJECT_NAME})
+add_test( TimeTest TimeTest )
+
 install(TARGETS sim DESTINATION ${CMAKE_SOURCE_DIR})
