@@ -92,6 +92,7 @@ TEST(TestGeography, GetSpeedRelativeWind) {
 
     EXPECT_NEAR(relative_speed, 40, 0.01);
 
+    /* Checks all angle quadrants to ensure accuracy*/
     car_speed = 40;
     car_bearing = 40;
     wind = Wind(40, 40);
